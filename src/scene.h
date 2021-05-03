@@ -6,9 +6,12 @@ vec3 slidcoords = (vec3){{0.1, 0.8, 0}};
 float slidmoffset = 0;
 int slidersliding = 0; // Is the slider being slid?
 
+int is_in_menu = 0;
 
 
-void draw() {
+
+
+void draw_menu() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if (mb2) { // Use an additional input to move gui elements for testing- right click moves the button.
 		tbcoords.d[0] = omg_cursorpos[0];
@@ -59,12 +62,22 @@ void draw() {
 	drawMouse();
 }
 
+void draw_gameplay(){
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
+void draw(){
+	if(is_in_menu) draw_menu();
+	else draw_gameplay();
+	
+}
 
 void initScene() {
 	// initialize GL:
 	glClearColor(0.0, 0.0, 0.3, 0.0);
 	glViewport(0, 0, winSizeX, winSizeY);
+	SDL_ShowCursor(SDL_DISABLE);
+	SDL_WM_SetCaption("Video Game", 0);
 }
 
 
@@ -73,7 +86,7 @@ BEGIN_EVENT_HANDLER
 	using_cursorkeys = 1;
 	switch (E_KEYSYM) {
 		case SDLK_ESCAPE:
-		case SDLK_q: isRunning = 0; break;
+		case SDLK_q: is_in_menu = !is_in_menu; break;
 		case SDLK_UP: 	dirbstates[0] = 1; break;
 		case SDLK_DOWN: dirbstates[1] = 1; break;
 		case SDLK_LEFT: dirbstates[2] = 1; break;

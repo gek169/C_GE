@@ -32,13 +32,15 @@ Demo of Gek's proposed Open Immediate Mode Gui Standard
 
 int winSizeX = 640;
 int winSizeY = 480;
-double tpassed = 0;
 int isRunning = 1;
 int dirbstates[4] = {0, 0, 0, 0}; // up,down,left,right
 int mousepos[2] = {0, 0};
 int using_cursorkeys = 0; // Switches to cursor keys upon pressing a key.
 int mb = 0;				  // cursor button
 int mb2 = 0;			  // cursor second button.
+
+
+double tpassed = 0;
 
 #define BEGIN_EVENT_HANDLER                                                                                                                                    \
 	void events(SDL_Event* e) {                                                                                                                                \
@@ -195,7 +197,7 @@ int main(int argc, char** argv) {
 #endif
 	fflush(stdout);
 
-	SDL_ShowCursor(SDL_ENABLE);
+	SDL_ShowCursor(SDL_DISABLE);
 	SDL_WM_SetCaption(argv[0], 0);
 
 	// initialize TinyGL:
@@ -222,7 +224,6 @@ int main(int argc, char** argv) {
 	// variables for timing:
 	long long unsigned int frames = 0;
 	unsigned int tNow = SDL_GetTicks();
-	unsigned int tLastFps = tNow;
 
 	// main loop:
 
