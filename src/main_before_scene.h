@@ -80,16 +80,7 @@ void drawBox(GLfloat x, GLfloat y, GLfloat xdim, GLfloat ydim) { // 0,0 is top l
 	return;
 }
 
-void drawMouse() {
-	if (!omg_cb)
-		glColor3f(0.7, 0.7, 0.7);
-	else
-		glColor3f(1.0, 0.1, 0.1);
-	// if(!using_cursorkeys)
-	drawBox(omg_cursorpos[0], omg_cursorpos[1], 0.03, 0.03);
-	// else
-	//	drawBox(omg_cursorpos_presuck[0],omg_cursorpos_presuck[1], 0.03, 0.03);
-}
+
 
 void drawTB(const char* text, GLuint textcolor, GLfloat x, GLfloat y, GLint size, float* tw, float* th) {
 	size = (size > 64) ? 64 : ((size < 8) ? 8 : size);

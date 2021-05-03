@@ -7,6 +7,14 @@ vec3 mouse_to_normal(int mx, int my) {
 	return r;
 }
 
+void drawMouse() {
+	if (!omg_cb)
+		glColor3f(0.7, 0.7, 0.7);
+	else
+		glColor3f(1.0, 0.1, 0.1);
+	drawBox(omg_cursorpos[0], omg_cursorpos[1], 0.03, 0.03);
+}
+
 int haveclicked = 0; // For our toggleable movable button.
 vec3 tbcoords = (vec3){{0.4, 0.4, 0}};
 vec3 slidcoords = (vec3){{0.1, 0.8, 0}};
