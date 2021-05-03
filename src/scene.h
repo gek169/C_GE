@@ -1,4 +1,4 @@
-
+#include "main_before_scene.h"
 
 int haveclicked = 0; // For our toggleable movable button.
 vec3 tbcoords = (vec3){{0.4, 0.4, 0}};
