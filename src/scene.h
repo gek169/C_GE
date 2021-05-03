@@ -20,6 +20,8 @@ vec3 tbcoords = (vec3){{0.4, 0.4, 0}};
 vec3 slidcoords = (vec3){{0.1, 0.8, 0}};
 float slidmoffset = 0;
 int slidersliding = 0; // Is the slider being slid?
+GLuint boing_display_list = 0;
+GLuint boing_texture = 0;
 
 int is_in_menu = 0;
 
@@ -79,6 +81,11 @@ void draw_menu() {
 
 void draw_gameplay(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+		//glTranslatef(0.5, 0.5, 1);
+		glCallList(boing_display_list);
+	glPopMatrix();
 }
 
 void draw(){
@@ -95,6 +102,22 @@ void initScene() {
 	SDL_WM_SetCaption("Video Game", 0);
 	myTrack = lmus("WWGW.mp3");
 	mplay(myTrack, -1, 1000);
+	{
+		int sw, sh, sc;
+		uchar* source_data = stbi_load("boing.png", &sw, &sh, &sc, 3);
+		if(!source_data){
+			puts("Cannot load sprite."); exit(1);
+		}
+		boing_texture = loadRGBTexture(source_data, sw, sh);
+		free(source_data);
+		boing_display_list = glGenLists(1);
+		glNewList(boing_display_list, GL_COMPILE);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, boing_texture);
+			drawBox(0.1,0.1,0.2,0.2); //centered.
+			glDisable(GL_TEXTURE_2D);
+		glEndList();
+	}
 }
 
 
