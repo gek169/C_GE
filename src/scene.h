@@ -24,7 +24,7 @@ int slidersliding = 0; // Is the slider being slid?
 int is_in_menu = 0;
 
 
-
+track* myTrack = NULL;
 
 void draw_menu() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -93,6 +93,8 @@ void initScene() {
 	glViewport(0, 0, winSizeX, winSizeY);
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_WM_SetCaption("Video Game", 0);
+	myTrack = lmus("WWGW.mp3");
+	mplay(myTrack, -1, 1000);
 }
 
 
