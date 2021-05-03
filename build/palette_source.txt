@@ -1,0 +1,7 @@
+https://lospec.com/palette-list
+
+I have selected some favorites and put them here for your use. Load them up with stb image (also included) and use
+them to your heart's content!
+
+(By the way, yes, I do think you should load the file at runtime if you can, so that the user can 
+perform palette swaps easily.)
