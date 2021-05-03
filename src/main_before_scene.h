@@ -1,11 +1,4 @@
-/* OPENIMGUI STANDARD DEMO
-
-Demo of Gek's proposed Open Immediate Mode Gui Standard
-
-
-
-*/
-//#define PLAY_MUSIC
+/* C_GE */
 
 #include <math.h>
 #include <stdio.h>
@@ -27,7 +20,7 @@ Demo of Gek's proposed Open Immediate Mode Gui Standard
 #include "../include/openimgui.h"
 
 #ifndef M_PI
-#define M_PI 3.14159265
+#define M_PI 3.14159265358979
 #endif
 
 int winSizeX = 640;
@@ -57,12 +50,7 @@ double tpassed = 0;
 #define E_WINW e->window.data1
 #define E_WINH e->window.data2
 
-vec3 mouse_to_normal(int mx, int my) {
-	vec3 r;
-	r.d[0] = mx / (float)winSizeX;
-	r.d[1] = my / (float)winSizeY;
-	return r;
-}
+
 
 void drawBox(GLfloat x, GLfloat y, GLfloat xdim, GLfloat ydim) { // 0,0 is top left, 1,1 is bottom right
 	x *= 2;

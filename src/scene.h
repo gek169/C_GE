@@ -1,5 +1,12 @@
 #include "main_before_scene.h"
 
+vec3 mouse_to_normal(int mx, int my) {
+	vec3 r;
+	r.d[0] = mx / (float)winSizeX;
+	r.d[1] = my / (float)winSizeY;
+	return r;
+}
+
 int haveclicked = 0; // For our toggleable movable button.
 vec3 tbcoords = (vec3){{0.4, 0.4, 0}};
 vec3 slidcoords = (vec3){{0.1, 0.8, 0}};
