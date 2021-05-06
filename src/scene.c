@@ -170,8 +170,8 @@ void initScene() {
 	myworld.nbodies++;
 	myworld.bodies[cbody] = bodies + cbody;
 	initPhysBody(bodies + cbody);
-	bodies[cbody].mass = 0;
-	bodies[cbody].v = (vec3){{0,0,0}};
+	bodies[cbody].mass = 100;
+	bodies[cbody].v = (vec3){{0,10,0}};
 	bodies[cbody].shape.c = (vec4){{(float)winSizeX/2.0, -100.0, 0, 0}};
 	bodies[cbody].shape.e = (vec3){{(float)winSizeX/4.0, 10, 1000.0}};
 
