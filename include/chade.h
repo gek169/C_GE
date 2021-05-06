@@ -2,8 +2,8 @@
 #include "3dMath.h"
 
 #include "chadphys.h"
-#include "GL/gl.h"
-#include "zbuffer.h"
+#include "../include/GL/gl.h"
+#include "../include/zbuffer.h"
 #include "api_audio.h"
 #include "tobjparse.h"
 
