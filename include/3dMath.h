@@ -558,6 +558,7 @@ static inline vec4 spherevaabb( vec4 sph,  aabb box){
 			f_ factor = diff/len;
 			vec3 bruh = scalev3(factor, v);
 			ret = upv3(bruh, diff);
+			//puts("complex case");
 			return ret;
 		} else {
 			aabb virt;
@@ -565,6 +566,7 @@ static inline vec4 spherevaabb( vec4 sph,  aabb box){
 			virt.e.d[0] = sph.d[3];
 			virt.e.d[1] = sph.d[3];
 			virt.e.d[2] = sph.d[3];
+			//puts("boxvbox case"); //TODO: Remove
 			return boxvbox(virt,box);
 		}
 	}

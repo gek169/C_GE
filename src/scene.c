@@ -1,5 +1,9 @@
 #include "scene.h"
 
+phys_world myworld;
+phys_body bodies[1000];
+
+
 
 
 void drawMouse() {
@@ -17,7 +21,7 @@ float slidmoffset = 0;
 int slidersliding = 0; // Is the slider being slid?
 GLuint boing_display_list = 0;
 GLuint boing_texture = 0;
-
+const float ballsize = 30.0;
 int is_in_menu = 0;
 
 
@@ -75,13 +79,43 @@ void draw_menu() {
 }
 
 void draw_gameplay(){
+	stepPhysWorld(&myworld, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-		glTranslatef(0.2, -0.2, 0);
+		glTranslatef(2.0 * bodies[0].shape.c.d[0]/(float)winSizeX, 
+		2.0 * bodies[0].shape.c.d[1]/(float)winSizeY, 0);
 		glCallList(boing_display_list);
 	glPopMatrix();
-}
+	glDisable(GL_TEXTURE_2D);
+	glColor3f(0.0, 1.0, 0.0);
+	glPushMatrix();
+		glTranslatef(
+		2.0 * bodies[1].shape.c.d[0]/(float)winSizeX, 
+		2.0 * bodies[1].shape.c.d[1]/(float)winSizeY, 
+		0);
+		drawBox(
+			-1.0 * bodies[1].shape.e.d[0]/(float)winSizeX,
+			-1.0 * bodies[1].shape.e.d[1]/(float)winSizeY,
+			2.0 * bodies[1].shape.e.d[0]/(float)winSizeX,
+			2.0 * bodies[1].shape.e.d[1]/(float)winSizeY
+		);
+	glPopMatrix();
+
+
+	glColor3f(1.0, 1.0, 0.0);
+	glPushMatrix();
+		glTranslatef(
+		2.0 * bodies[2].shape.c.d[0]/(float)winSizeX, 
+		2.0 * bodies[2].shape.c.d[1]/(float)winSizeY, 
+		0);
+		drawBox(
+			-1.0 * bodies[2].shape.e.d[0]/(float)winSizeX,
+			-1.0 * bodies[2].shape.e.d[1]/(float)winSizeY,
+			2.0 * bodies[2].shape.e.d[0]/(float)winSizeX,
+			2.0 * bodies[2].shape.e.d[1]/(float)winSizeY
+		);
+	glPopMatrix();}
 
 void draw(){
 	if(is_in_menu) draw_menu();
@@ -110,10 +144,45 @@ void initScene() {
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, boing_texture);
 			glColor3f(1,1,1);
-			drawBox(0,0,     0.2,0.2); //centered.
+			drawBox(-ballsize/(float)winSizeX, -ballsize/(float)winSizeY,
+					ballsize/(float)winSizeX * 2.0,     ballsize/(float)winSizeY * 2.0); //centered.
 			glDisable(GL_TEXTURE_2D);
 		glEndList();
 	}
+	myworld.bodies = calloc(1, 1000*sizeof(phys_body*));
+	myworld.nbodies = 0;
+	myworld.is_2d = 1;
+	myworld.ms = 100.0;
+	if(!myworld.bodies) exit(1);
+	myworld.g = (vec3){{0,-1, 0}};
+
+
+//adding bodies!
+	int cbody = 0;
+	myworld.nbodies++;
+	myworld.bodies[cbody] = bodies + cbody;
+	initPhysBody(bodies + cbody);
+	bodies[cbody].mass = 10;
+	bodies[cbody].v = (vec3){{10,0,0}};
+	bodies[cbody].shape.c = (vec4){{0, 0, 0, ballsize}};
+
+	cbody++;
+	myworld.nbodies++;
+	myworld.bodies[cbody] = bodies + cbody;
+	initPhysBody(bodies + cbody);
+	bodies[cbody].mass = 0;
+	bodies[cbody].v = (vec3){{0,0,0}};
+	bodies[cbody].shape.c = (vec4){{(float)winSizeX/2.0, -100.0, 0, 0}};
+	bodies[cbody].shape.e = (vec3){{(float)winSizeX/4.0, 10, 1000.0}};
+
+	cbody++;
+	myworld.nbodies++;
+	myworld.bodies[cbody] = bodies + cbody;
+	initPhysBody(bodies + cbody);
+	bodies[cbody].mass = 0;
+	bodies[cbody].v = (vec3){{0,0,0}};
+	bodies[cbody].shape.c = (vec4){{0.1, -400.0, 0, 0}};
+	bodies[cbody].shape.e = (vec3){{(float)winSizeX/2.0, 10, 1000.0}};
 }
 
 

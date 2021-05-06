@@ -90,7 +90,7 @@ int omg_textbox(float x, float y, const char* text, int textsize, int sucks, flo
 
 int main(int argc, char** argv) {
 	// initialize SDL video:
-	unsigned int fps = 0;
+	unsigned int fps = 60;
 	char needsRGBAFix = 0;
 	if (argc > 2) {
 		char* larg = argv[1];
