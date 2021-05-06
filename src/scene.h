@@ -83,7 +83,7 @@ void draw_gameplay(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-		//glTranslatef(0.5, 0.5, 1);
+		glTranslatef(0.2, -0.2, 0);
 		glCallList(boing_display_list);
 	glPopMatrix();
 }
@@ -115,7 +115,7 @@ void initScene() {
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, boing_texture);
 			glColor3f(1,1,1);
-			drawBox(0.1,0.1,0.2,0.2); //centered.
+			drawBox(0,0,     0.2,0.2); //centered.
 			glDisable(GL_TEXTURE_2D);
 		glEndList();
 	}
