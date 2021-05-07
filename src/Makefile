@@ -4,7 +4,7 @@ include ../config.mk
 GL_LIBS= -L../ 
 GL_INCLUDES= -I../include/
 ALL_T= main
-LIB= ../lib/libTinyGL.a
+LIB= ../lib/libTinyGL.a ../lib/liblua.a
 
 
 
