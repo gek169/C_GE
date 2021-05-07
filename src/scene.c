@@ -115,8 +115,13 @@ void draw_gameplay(){
 			2.0 * bodies[2].shape.e.d[0]/(float)winSizeX,
 			2.0 * bodies[2].shape.e.d[1]/(float)winSizeY
 		);
-	glPopMatrix();}
-
+	glPopMatrix();
+	glPushMatrix();
+		glTranslatef(2.0 * bodies[3].shape.c.d[0]/(float)winSizeX, 
+		2.0 * bodies[3].shape.c.d[1]/(float)winSizeY, 0);
+		glCallList(boing_display_list);
+	glPopMatrix();
+}
 void draw(){
 	if(is_in_menu) draw_menu();
 	else draw_gameplay();
@@ -165,6 +170,7 @@ void initScene() {
 	bodies[cbody].mass = 10;
 	bodies[cbody].v = (vec3){{10,0,0}};
 	bodies[cbody].shape.c = (vec4){{0, 0, 0, ballsize}};
+	bodies[cbody].shape.e = (vec3){{ballsize,ballsize,ballsize}};
 
 	cbody++;
 	myworld.nbodies++;
@@ -183,6 +189,15 @@ void initScene() {
 	bodies[cbody].v = (vec3){{0,0,0}};
 	bodies[cbody].shape.c = (vec4){{0.1, -400.0, 0, 0}};
 	bodies[cbody].shape.e = (vec3){{(float)winSizeX/2.0, 10, 1000.0}};
+
+	cbody++;
+	myworld.nbodies++;
+	myworld.bodies[cbody] = bodies + cbody;
+	initPhysBody(bodies + cbody);
+	bodies[cbody].mass = 10;
+	bodies[cbody].v = (vec3){{0,120,0}};
+	bodies[cbody].shape.c = (vec4){{28.0, 100, 0, ballsize}};
+	bodies[cbody].shape.e = (vec3){{ballsize,ballsize,ballsize}};
 }
 
 
