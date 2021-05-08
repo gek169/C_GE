@@ -157,7 +157,7 @@ void initScene() {
 	myworld.bodies = calloc(1, 1000*sizeof(phys_body*));
 	myworld.nbodies = 0;
 	myworld.is_2d = 1;
-	myworld.ms = 100.0;
+	myworld.ms = 10.0;
 	if(!myworld.bodies) exit(1);
 	myworld.g = (vec3){{0,-1, 0}};
 
@@ -168,7 +168,7 @@ void initScene() {
 	myworld.bodies[cbody] = bodies + cbody;
 	initPhysBody(bodies + cbody);
 	bodies[cbody].mass = 10;
-	bodies[cbody].v = (vec3){{10,0,0}};
+	bodies[cbody].v = (vec3){{0,0,0}};
 	bodies[cbody].shape.c = (vec4){{0, 0, 0, ballsize}};
 	bodies[cbody].shape.e = (vec3){{ballsize,ballsize,ballsize}};
 
@@ -195,7 +195,7 @@ void initScene() {
 	myworld.bodies[cbody] = bodies + cbody;
 	initPhysBody(bodies + cbody);
 	bodies[cbody].mass = 10;
-	bodies[cbody].v = (vec3){{0,120,0}};
+	bodies[cbody].v = (vec3){{0,0,0}};
 	bodies[cbody].shape.c = (vec4){{28.0, 100, 0, ballsize}};
 	bodies[cbody].shape.e = (vec3){{ballsize,ballsize,ballsize}};
 }
