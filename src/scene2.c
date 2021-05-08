@@ -75,7 +75,7 @@ void draw_menu() {
 }
 
 void draw_gameplay(){
-
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 void draw(){
 	if(is_in_menu) draw_menu();
