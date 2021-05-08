@@ -1,8 +1,4 @@
 #include "scene.h"
-
-phys_world myworld;
-#define MAX_BODIES 1000
-phys_body bodies[MAX_BODIES];
 void drawMouse() {
 	if (!omg_cb)
 		glColor3f(0.7, 0.7, 0.7);
@@ -25,51 +21,9 @@ track* myTrack = NULL;
 
 void draw_menu() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	if (mb2) { // Use an additional input to move gui elements for testing- right click moves the button.
-		tbcoords.d[0] = omg_cursorpos[0];
-		tbcoords.d[1] = omg_cursorpos[1];
-		haveclicked = 0;
-	}
-
-	if (omg_textbox(0.01, 0, "\nEntry 1\n", 24, 1, 0.4, 0.2, 0xFFFFFF, 0) && omg_cb == 2)
-		puts("Entry 1");
-	if (omg_textbox(0.01, 0.2, "\nEntry 2\n", 24, 1, 0.4, 0.2, 0xFFFFFF, 0) && omg_cb == 2)
-		puts("Entry 2");
-	if (omg_textbox(0.01, 0.4, "\nEntry 3\n", 24, 1, 0.4, 0.2, 0xFFFFFF, 0) && omg_cb == 2)
-		puts("Entry 3");
 	if (omg_textbox(0.01, 0.6, "\nQuit\n", 24, 1, 0.4, 0.2, 0xFFFFFF, 0) && omg_cb == 2) {
 		puts("Quitting...");
 		isRunning = 0;
-	}
-
-	if (omg_textbox(tbcoords.d[0], tbcoords.d[1], "\nClick me and I toggle color!\n", 16, 1, 0.4, 0.3, 0xFFFFFF, haveclicked ? 0xFF0000 : 0x00) &&
-		omg_cb == 1) {
-		puts("Detected click! EVENT FIRED!\n");
-		haveclicked = !haveclicked;
-	}
-	// A slider element
-	if (omg_textbox(slidcoords.d[0], slidcoords.d[1], "\n Slider \n", 16, 1, 0.4, 0.3, 0xFFFFFF, haveclicked ? 0xFF0000 : 0x00) && omg_cb == 1) {
-		slidersliding = 1;
-		slidmoffset = omg_cursorpos[0] - slidcoords.d[0];
-	}
-	if (omg_cb == 2)
-		slidersliding = 0;
-	// Handle the slider sliding behavior.
-	if (slidersliding) {
-		if (using_cursorkeys) {
-			if (omg_udlr[3]) {
-				slidcoords.d[0] = clampf(slidcoords.d[0] + 0.05, 0.1, 0.7);
-			}
-			if (omg_udlr[2]) {
-				slidcoords.d[0] = clampf(slidcoords.d[0] - 0.05, 0.1, 0.7);
-			}
-			omg_cursorpos[0] = slidcoords.d[0] + slidmoffset;
-			omg_cursorpos[1] = slidcoords.d[1];
-		} else {
-			// Move the element to the cursorposition's x.
-			slidcoords.d[0] = clampf(omg_cursorpos[0] - slidmoffset, 0.1, 0.7);
-		}
-		printf("Slider's value is %f\n", slidcoords.d[0]);
 	}
 	drawMouse();
 }
@@ -80,7 +34,6 @@ void draw_gameplay(){
 void draw(){
 	if(is_in_menu) draw_menu();
 	else draw_gameplay();
-	
 }
 
 void initScene() {
@@ -89,25 +42,8 @@ void initScene() {
 	glViewport(0, 0, winSizeX, winSizeY);
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_WM_SetCaption("Video Game", 0);
-	myTrack = lmus("WWGW.mp3");
-	mplay(myTrack, -1, 1000);
 	{
-		int sw, sh, sc;
-		uchar* source_data = stbi_load("boing.png", &sw, &sh, &sc, 3);
-		if(!source_data){
-			puts("Cannot load sprite."); exit(1);
-		}
-		boing_texture = loadRGBTexture(source_data, sw, sh);
-		free(source_data);
-		boing_display_list = glGenLists(1);
-		glNewList(boing_display_list, GL_COMPILE);
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, boing_texture);
-			glColor3f(1,1,1);
-			drawBox(-ballsize/(float)winSizeX, -ballsize/(float)winSizeY,
-					ballsize/(float)winSizeX * 2.0,     ballsize/(float)winSizeY * 2.0); //centered.
-			glDisable(GL_TEXTURE_2D);
-		glEndList();
+
 	}
 }
 
