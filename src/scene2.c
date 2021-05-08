@@ -10,7 +10,6 @@ void drawMouse() {
 		glColor3f(1.0, 0.1, 0.1);
 	drawBox(omg_cursorpos[0], omg_cursorpos[1], 0.03, 0.03);
 }
-
 int haveclicked = 0; // For our toggleable movable button.
 vec3 tbcoords = (vec3){{0.4, 0.4, 0}};
 vec3 slidcoords = (vec3){{0.1, 0.8, 0}};
@@ -76,48 +75,7 @@ void draw_menu() {
 }
 
 void draw_gameplay(){
-	stepPhysWorld(&myworld, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-		glTranslatef(2.0 * bodies[0].shape.c.d[0]/(float)winSizeX, 
-		2.0 * bodies[0].shape.c.d[1]/(float)winSizeY, 0);
-		glCallList(boing_display_list);
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-	glColor3f(0.0, 1.0, 0.0);
-	glPushMatrix();
-		glTranslatef(
-		2.0 * bodies[1].shape.c.d[0]/(float)winSizeX, 
-		2.0 * bodies[1].shape.c.d[1]/(float)winSizeY, 
-		0);
-		drawBox(
-			-1.0 * bodies[1].shape.e.d[0]/(float)winSizeX,
-			-1.0 * bodies[1].shape.e.d[1]/(float)winSizeY,
-			2.0 * bodies[1].shape.e.d[0]/(float)winSizeX,
-			2.0 * bodies[1].shape.e.d[1]/(float)winSizeY
-		);
-	glPopMatrix();
 
-
-	glColor3f(1.0, 1.0, 0.0);
-	glPushMatrix();
-		glTranslatef(
-		2.0 * bodies[2].shape.c.d[0]/(float)winSizeX, 
-		2.0 * bodies[2].shape.c.d[1]/(float)winSizeY, 
-		0);
-		drawBox(
-			-1.0 * bodies[2].shape.e.d[0]/(float)winSizeX,
-			-1.0 * bodies[2].shape.e.d[1]/(float)winSizeY,
-			2.0 * bodies[2].shape.e.d[0]/(float)winSizeX,
-			2.0 * bodies[2].shape.e.d[1]/(float)winSizeY
-		);
-	glPopMatrix();
-	glPushMatrix();
-		glTranslatef(2.0 * bodies[3].shape.c.d[0]/(float)winSizeX, 
-		2.0 * bodies[3].shape.c.d[1]/(float)winSizeY, 0);
-		glCallList(boing_display_list);
-	glPopMatrix();
 }
 void draw(){
 	if(is_in_menu) draw_menu();
@@ -151,50 +109,6 @@ void initScene() {
 			glDisable(GL_TEXTURE_2D);
 		glEndList();
 	}
-	myworld.bodies = calloc(1, MAX_BODIES*sizeof(phys_body*));
-	myworld.nbodies = 0;
-	myworld.is_2d = 1;
-	myworld.ms = 10.0;
-	if(!myworld.bodies) exit(1);
-	myworld.g = (vec3){{0,-1, 0}};
-
-
-//adding bodies!
-	int cbody = 0;
-	myworld.nbodies++;
-	myworld.bodies[cbody] = bodies + cbody;
-	initPhysBody(bodies + cbody);
-	bodies[cbody].mass = 10;
-	bodies[cbody].v = (vec3){{0,0,0}};
-	bodies[cbody].shape.c = (vec4){{0, 0, 0, ballsize}};
-	bodies[cbody].shape.e = (vec3){{ballsize,ballsize,ballsize}};
-
-	cbody++;
-	myworld.nbodies++;
-	myworld.bodies[cbody] = bodies + cbody;
-	initPhysBody(bodies + cbody);
-	bodies[cbody].mass = 100;
-	bodies[cbody].v = (vec3){{0,10,0}};
-	bodies[cbody].shape.c = (vec4){{(float)winSizeX/2.0, -100.0, 0, 0}};
-	bodies[cbody].shape.e = (vec3){{(float)winSizeX/4.0, 10, 1000.0}};
-
-	cbody++;
-	myworld.nbodies++;
-	myworld.bodies[cbody] = bodies + cbody;
-	initPhysBody(bodies + cbody);
-	bodies[cbody].mass = 0;
-	bodies[cbody].v = (vec3){{0,0,0}};
-	bodies[cbody].shape.c = (vec4){{0.1, -400.0, 0, 0}};
-	bodies[cbody].shape.e = (vec3){{(float)winSizeX/2.0, 10, 1000.0}};
-
-	cbody++;
-	myworld.nbodies++;
-	myworld.bodies[cbody] = bodies + cbody;
-	initPhysBody(bodies + cbody);
-	bodies[cbody].mass = 10;
-	bodies[cbody].v = (vec3){{0,0,0}};
-	bodies[cbody].shape.c = (vec4){{28.0, 100, 0, ballsize}};
-	bodies[cbody].shape.e = (vec3){{ballsize,ballsize,ballsize}};
 }
 
 

@@ -14,4 +14,5 @@ all: $(ALL_T)
 clean:
 	rm -f $(ALL_T) *.exe
 main:
-	$(CC) *.c $(LIB) -o main $(GL_INCLUDES) $(SDL_LIBS) $(SDL_MIXERLIBS) $(GL_LIBS) $(CFLAGS)
+	$(CC) scene.c main.c $(LIB) -o main $(GL_INCLUDES) $(SDL_LIBS) $(SDL_MIXERLIBS) $(GL_LIBS) $(CFLAGS)
+	$(CC) scene2.c main.c $(LIB) -o main2.bin $(GL_INCLUDES) $(SDL_LIBS) $(SDL_MIXERLIBS) $(GL_LIBS) $(CFLAGS)

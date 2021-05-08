@@ -14,6 +14,7 @@ lua/liblua.a:
 CODE: $(LIB) lua/liblua.a
 	cd src && $(MAKE) && cd ..
 	-mv src/main ./build/
+	-mv src/*.bin ./build/
 	-mv src/*.exe ./build/
 clean:
 	cd src_tgl && $(MAKE) clean && cd ..
@@ -22,6 +23,7 @@ clean:
 	cd lib && rm -f *.a && cd ..
 	cd build && rm -f main && cd ..
 	cd build && rm -f *.exe && cd ..
+	cd build && rm -f *.bin && cd ..
 update_tinygl: clean
 	rm -rf src_tgl
 	mkdir src_tgl
