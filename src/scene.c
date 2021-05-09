@@ -8,6 +8,11 @@ void drawMouse() {
 }
 int haveclicked = 0; // For our toggleable movable button.
 int is_in_menu = 0;
+#define LUA_EXPORT(fname) int lua_##fname(lua_State* L)
+#define LUA_IMPORT(fname) lua_register(L_STATE, #fname, lua_##fname);
+#define LUA_FLOATARG(n) float arg##n = lua_tonumber(L, n);
+#define LUA_INTARG(n) int arg##n = lua_tointeger(L, n);
+#define LUA_STRINGARG(n) const char* arg##n = lua_tostring(L, n);
 #define MAX_TRACKS 1000
 #define MAX_SAMPS 1000
 track* tracks[MAX_TRACKS] = {0};
@@ -16,11 +21,53 @@ samp* samps[MAX_SAMPS] = {0};
 ChadWorld entity_world;
 ChadEntity entities[MAX_ENTITIES];
 
+//camera transforms.
+vec3 campos;
+vec3 camrot;
+mat4 camproj;
+
 
 /*LUA FUNCTIONS*/
+LUA_EXPORT(drawBox){
+	LUA_FLOATARG(1);
+	LUA_FLOATARG(2);
+	LUA_FLOATARG(3);
+	LUA_FLOATARG(4);
+	drawBox(arg1, arg2, arg3, arg4);
+	return LUA_OK;
+}
+LUA_EXPORT(omg_box){
+	//int omg_box(float x, float y, float xdim, float ydim, 
+	//int sucks, float buttonjumpx, float buttonjumpy, int hints);
+	LUA_FLOATARG(1);
+	LUA_FLOATARG(2);
+	LUA_FLOATARG(3);
+	LUA_FLOATARG(4);
+	LUA_INTARG(5); //sucks
+	LUA_FLOATARG(6);
+	LUA_FLOATARG(7);
+	LUA_INTARG(8);
+	lua_pushinteger(L, omg_box(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8));
+	return LUA_OK;
+}
+
+LUA_EXPORT(omg_textbox){
+	//int omg_textbox(float x, float y, const char* text, 
+	//int textsize, int sucks, float buttonjumpx, float buttonjumpy, int hints, int hintstext);
+	LUA_FLOATARG(1);
+	LUA_FLOATARG(2);
+	LUA_STRINGARG(3);
+	LUA_INTARG(4);
+	LUA_INTARG(5);
+	LUA_FLOATARG(6);
+	LUA_FLOATARG(7);
+	LUA_INTARG(8);
+	LUA_INTARG(9);
+	lua_pushinteger(L, omg_textbox(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9));
+	return LUA_OK;
+}
 int lua_loadTexture(lua_State* L){
-	size_t len;
-	const char* texturename = lua_tolstring(L, 1, &len);
+	const char* texturename = lua_tostring(L, 1);
 	{
 		int sw, sh, sc; GLint retval;
 		uchar* source_data = stbi_load(texturename, &sw, &sh, &sc, 3);
@@ -36,6 +83,33 @@ int lua_loadTexture(lua_State* L){
 	return LUA_OK;
 }
 
+int lua_setCamPos(lua_State* L){
+	campos.d[0] = lua_tonumber(L,1);
+	campos.d[1] = lua_tonumber(L,2);
+	campos.d[2] = lua_tonumber(L,3);
+	return LUA_OK;
+}
+int lua_setCamRot(lua_State* L){
+	camrot.d[0] = lua_tonumber(L,1);
+	camrot.d[1] = lua_tonumber(L,2);
+	camrot.d[2] = lua_tonumber(L,3);
+	return LUA_OK;
+}
+
+
+int lua_resetProj(lua_State* L){
+	(void)L;
+	camproj = identitymat4();
+	return LUA_OK;
+}
+int lua_setPerspective(lua_State* L){
+	LUA_FLOATARG(1);
+	LUA_FLOATARG(2);
+	LUA_FLOATARG(3);
+	LUA_FLOATARG(4);
+	camproj = perspective(arg1,arg2,arg3,arg4);
+	return LUA_OK;
+}
 
 int lua_bindTexture(lua_State* L){
 	GLint texture_id = lua_tointeger(L, 1);
@@ -60,17 +134,40 @@ int lua_callList(lua_State* L){
 	glCallList(texture_id);
 	return LUA_OK;
 }
-
 int lua_setTexturingEnabled(lua_State* L){
 	GLint arg = lua_tointeger(L, 1);
 	if(arg) glEnable(GL_TEXTURE_2D);
 	else glDisable(GL_TEXTURE_2D);
 	return LUA_OK;
 }
+int lua_set2D(lua_State* L){
+	GLint arg = lua_tointeger(L, 1);
+	if(arg) entity_world.world.is_2d = 1;
+	else entity_world.world.is_2d = 0;
+	return LUA_OK;
+}
+
+int lua_buildSpriteDisplayList(lua_State* L){
+	LUA_FLOATARG(1); //width
+	arg1/=2.0;
+	LUA_FLOATARG(2); //height
+	arg2/=2.0;
+	LUA_INTARG(3); //texture ID.
+	GLuint display_list = glGenLists(1);
+	glNewList(display_list, GL_COMPILE);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, arg3);
+		glColor3f(1,1,1);
+		drawBox(-arg1/(float)winSizeX, -arg2/(float)winSizeY,
+				arg1/(float)winSizeX * 2.0, arg2/(float)winSizeY * 2.0); //centered.
+		glDisable(GL_TEXTURE_2D);
+	glEndList();
+	lua_pushinteger(L, display_list);
+	return LUA_OK;
+}
 
 int lua_buildModelDisplayList(lua_State* L){
-	size_t len;
-	const char* objname = lua_tolstring(L, 1, &len);
+	const char* objname = lua_tostring(L, 1);
 	GLint texture_id = lua_tointeger(L, 2);
 	{
 		objraw omodel;
@@ -109,11 +206,23 @@ void createLuaBindings(){
 	lua_register(L_STATE, "callList", lua_callList);
 	lua_register(L_STATE, "deleteList", lua_deleteList);
 	lua_register(L_STATE, "deleteTexture", lua_deleteTexture);
-	lua_register(L_STATE, "setTexturingEnabled", lua_setTexturingEnabled);
+	lua_register(L_STATE, "set2D", lua_set2D);
+	lua_register(L_STATE, "setCamPos", lua_setCamPos);
+	lua_register(L_STATE, "setCamRot", lua_setCamRot);
+	lua_register(L_STATE, "setPerspective", lua_setPerspective);
+	LUA_IMPORT(drawBox);
+	LUA_IMPORT(buildSpriteDisplayList);
+	LUA_IMPORT(omg_box);
+	LUA_IMPORT(omg_textbox);
+	LUA_IMPORT(setTexturingEnabled);
+	LUA_IMPORT(resetProj);
 }
 
 void draw_menu() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	//TODO: invoke lua for draw menu.
 	if (omg_textbox(0.01, 0.6, "\nQuit\n", 24, 1, 0.4, 0.2, 0xFFFFFF, 0) && omg_cb == 2) {
 		puts("Quitting...");
 		isRunning = 0;
@@ -123,6 +232,7 @@ void draw_menu() {
 
 void draw_gameplay(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//TODO: invoke lua for draw.
 }
 void draw(){
 	if(is_in_menu) draw_menu();
@@ -130,18 +240,21 @@ void draw(){
 }
 
 void initScene() {
-	// initialize GL:
 	glClearColor(0.0, 0.0, 0.3, 0.0);
 	glViewport(0, 0, winSizeX, winSizeY);
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_WM_SetCaption("Video Game", 0);
 	{
-
+		camproj = identitymat4();
+		campos = (vec3){{0,0,0}};
+		camrot = (vec3){{0,0,0}};
 	}
+	//TODO: invoke lua for initscene.
 }
 
 
 BEGIN_EVENT_HANDLER
+//TODO: pass E_KEYSYM to lua.
 	case SDL_KEYDOWN:
 	using_cursorkeys = 1;
 	switch (E_KEYSYM) {
