@@ -46,6 +46,7 @@ lua_State* L_STATE;
 #else
 extern int winSizeX, winSizeY, isRunning, dirbstates[4], using_cursorkeys, mousepos[2], mb, mb2;
 extern double tpassed;
+extern int sixbuttons[6];
 //Predeclare variables here.
 extern lua_State* L_STATE;
 #endif

@@ -93,6 +93,7 @@ int main(int argc, char** argv) {
 	unsigned int fps = 60;
 	char needsRGBAFix = 0;
 	L_STATE = luaL_newstate();
+	luaL_openlibs(L_STATE);
 	if (argc > 2) {
 		char* larg = argv[1];
 		for (int i = 0; i < argc; i++) {

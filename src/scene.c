@@ -328,7 +328,35 @@ void draw_menu() {
 void draw_gameplay(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//TODO: register global variables.
-	
+	int button1 = sixbuttons[0];
+	int button2 = sixbuttons[1];
+	int button3 = sixbuttons[2];
+	int button4 = sixbuttons[3];
+	int button5 = sixbuttons[4];
+	int button6 = sixbuttons[5];
+	int buttonup = dirbstates[0];
+	int buttondown = dirbstates[1];
+	int buttonleft = dirbstates[2];
+	int buttonright = dirbstates[3];
+	double mousex = mousepos[0];
+	double mousey = mousepos[1];
+	LUA_INTGLOBSET(button1);
+	LUA_INTGLOBSET(button2);
+	LUA_INTGLOBSET(button3);
+	LUA_INTGLOBSET(button4);
+	LUA_INTGLOBSET(button5);
+	LUA_INTGLOBSET(button6);
+	LUA_INTGLOBSET(buttonup);
+	LUA_INTGLOBSET(buttondown);
+	LUA_INTGLOBSET(buttonleft);
+	LUA_INTGLOBSET(buttonright);
+	LUA_INTGLOBSET(omg_cb);
+	LUA_INTGLOBSET(mb2);
+	LUA_INTGLOBSET(using_cursorkeys);
+	LUA_INTGLOBSET(isRunning);
+	LUA_FLOATGLOBSET(mousex);
+	LUA_FLOATGLOBSET(mousey);
+	LUA_FLOATGLOBSET(tpassed);
 	luaL_dostring(L_STATE, "draw()");
 }
 void draw(){
@@ -336,7 +364,6 @@ void draw(){
 	if(is_in_menu) draw_menu();
 	else draw_gameplay();
 }
-
 void cleanup(){
 	luaL_dostring(L_STATE, "cleanup()");
 }
@@ -372,6 +399,12 @@ BEGIN_EVENT_HANDLER
 		case SDLK_DOWN: dirbstates[1] = 1; break;
 		case SDLK_LEFT: dirbstates[2] = 1; break;
 		case SDLK_RIGHT:dirbstates[3] = 1; break;
+		case SDLK_z: sixbuttons[0] = 1; break;
+		case SDLK_x: sixbuttons[1] = 1; break;
+		case SDLK_c: sixbuttons[2] = 1; break;
+		case SDLK_a: sixbuttons[3] = 1; break;
+		case SDLK_s: sixbuttons[4] = 1; break;
+		case SDLK_d: sixbuttons[5] = 1; break;
 		case SDLK_SPACE:
 		case SDLK_RETURN: mb = 1;break;
 		default: break;
@@ -386,6 +419,12 @@ BEGIN_EVENT_HANDLER
 		case SDLK_DOWN:	dirbstates[1] = 0;	break;
 		case SDLK_LEFT:	dirbstates[2] = 0;	break;
 		case SDLK_RIGHT:dirbstates[3] = 0;	break;
+		case SDLK_z: sixbuttons[0] = 0; break;
+		case SDLK_x: sixbuttons[1] = 0; break;
+		case SDLK_c: sixbuttons[2] = 0; break;
+		case SDLK_a: sixbuttons[3] = 0; break;
+		case SDLK_s: sixbuttons[4] = 0; break;
+		case SDLK_d: sixbuttons[5] = 0; break;
 		default: break;
 	}
 	break;
