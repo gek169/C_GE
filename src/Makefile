@@ -12,6 +12,6 @@ clean:
 	rm -f $(ALL_T) *.exe
 main:
 #you might want to comment this one out.
-	$(CC) scene_example.c main.c $(LIB) -o main_example.bin $(GL_INCLUDES) $(SDL_LIBS) $(SDL_MIXERLIBS) $(GL_LIBS) $(CFLAGS)
+	$(CC) example/*.c main.c $(LIB) -o main_example.bin $(GL_INCLUDES) $(SDL_LIBS) $(SDL_MIXERLIBS) $(GL_LIBS) $(CFLAGS)
 #this is the one you'll want to keep
-	$(CC) scene.c main.c $(LIB) -o main $(GL_INCLUDES) $(SDL_LIBS) $(SDL_MIXERLIBS) $(GL_LIBS) $(CFLAGS)
+	$(CC) *.c $(LIB) -o main $(GL_INCLUDES) $(SDL_LIBS) $(SDL_MIXERLIBS) $(GL_LIBS) $(CFLAGS)
