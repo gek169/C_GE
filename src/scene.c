@@ -7,17 +7,110 @@ void drawMouse() {
 	drawBox(omg_cursorpos[0], omg_cursorpos[1], 0.03, 0.03);
 }
 int haveclicked = 0; // For our toggleable movable button.
-vec3 tbcoords = (vec3){{0.4, 0.4, 0}};
-vec3 slidcoords = (vec3){{0.1, 0.8, 0}};
-float slidmoffset = 0;
-int slidersliding = 0; // Is the slider being slid?
-GLuint boing_display_list = 0;
-GLuint boing_texture = 0;
-const float ballsize = 30.0;
 int is_in_menu = 0;
+#define MAX_TRACKS 1000
+#define MAX_SAMPS 1000
+track* tracks[MAX_TRACKS] = {0};
+samp* samps[MAX_SAMPS] = {0};
+#define MAX_ENTITIES 0x10000
+ChadWorld entity_world;
+ChadEntity entities[MAX_ENTITIES];
 
 
-track* myTrack = NULL;
+/*LUA FUNCTIONS*/
+int lua_loadTexture(lua_State* L){
+	size_t len;
+	const char* texturename = lua_tolstring(L, 1, &len);
+	{
+		int sw, sh, sc; GLint retval;
+		uchar* source_data = stbi_load(texturename, &sw, &sh, &sc, 3);
+		if(!source_data){
+			lua_pushinteger(L, -1);
+			printf("\nERROR!!! Cannot load '%s'!!!\n", texturename);
+			return LUA_ERRERR;
+		}
+		retval = loadRGBTexture(source_data, sw, sh);
+		free(source_data);
+		lua_pushinteger(L, retval);
+	}
+	return LUA_OK;
+}
+
+
+int lua_bindTexture(lua_State* L){
+	GLint texture_id = lua_tointeger(L, 1);
+	glBindTexture(GL_TEXTURE_2D, texture_id);
+	return LUA_OK;
+}
+
+int lua_deleteTexture(lua_State* L){
+	GLuint texture_id = lua_tointeger(L, 1);
+	glDeleteTextures(1, &texture_id);
+	return LUA_OK;
+}
+
+int lua_deleteList(lua_State* L){
+	GLint texture_id = lua_tointeger(L, 1);
+	glDeleteLists(texture_id, 1);
+	return LUA_OK;
+}
+
+int lua_callList(lua_State* L){
+	GLint texture_id = lua_tointeger(L, 1);
+	glCallList(texture_id);
+	return LUA_OK;
+}
+
+int lua_setTexturingEnabled(lua_State* L){
+	GLint arg = lua_tointeger(L, 1);
+	if(arg) glEnable(GL_TEXTURE_2D);
+	else glDisable(GL_TEXTURE_2D);
+	return LUA_OK;
+}
+
+int lua_buildModelDisplayList(lua_State* L){
+	size_t len;
+	const char* objname = lua_tolstring(L, 1, &len);
+	GLint texture_id = lua_tointeger(L, 2);
+	{
+		objraw omodel;
+		model m = initmodel();
+		omodel = tobj_load(objname);
+		if (!omodel.positions){ //error.
+			printf("\nERROR!!! Loading model '%s' results in ZERO POSITIONS!!!\n", objname);
+			lua_pushinteger(L, -1);
+			return LUA_ERRERR;
+		}
+		m = tobj_tomodel(&omodel);
+		{
+			GLint list;
+			list = glGenLists(1);
+			glNewList(list, GL_COMPILE);
+			if(texture_id > 0){
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D, texture_id);
+			} else {
+				glDisable(GL_TEXTURE_2D);
+			}
+			drawModel(m.d, m.npoints, m.c, m.n, m.t);
+			glEndList();
+			freemodel(&m);
+			freeobjraw(&omodel);
+			lua_pushinteger(L, list);
+		}
+	}
+	return LUA_OK;
+}
+
+void createLuaBindings(){
+	lua_register(L_STATE, "loadTexture", lua_loadTexture);
+	lua_register(L_STATE, "buildModelDisplayList", lua_buildModelDisplayList);
+	lua_register(L_STATE, "bindTexture", lua_bindTexture);
+	lua_register(L_STATE, "callList", lua_callList);
+	lua_register(L_STATE, "deleteList", lua_deleteList);
+	lua_register(L_STATE, "deleteTexture", lua_deleteTexture);
+	lua_register(L_STATE, "setTexturingEnabled", lua_setTexturingEnabled);
+}
 
 void draw_menu() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

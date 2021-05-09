@@ -19,6 +19,10 @@
 #include "../include/tobjparse.h"
 #include <SDL/SDL.h>
 #include "../include/openimgui.h"
+#include "../lua/lua.h"
+#include "../lua/lauxlib.h"
+#include "../lua/lualib.h"
+
 
 #ifndef M_PI
 #define M_PI 3.14159265358979
@@ -36,16 +40,19 @@ int mb = 0;				  // cursor button
 int mb2 = 0;			  // cursor second button.
 double tpassed = 0;
 //Declare variables here.
+lua_State* L_STATE;
 
 #else
 extern int winSizeX, winSizeY, isRunning, dirbstates[4], using_cursorkeys, mousepos[2], mb, mb2;
 extern double tpassed;
 //Predeclare variables here.
+extern lua_State* L_STATE;
 #endif
 
 //predeclare functions here.
 void events(SDL_Event* e);
 void initScene();
+void createLuaBindings();
 void draw();
 int omg_textbox(float x, float y, const char* text, int textsize, int sucks, float buttonjumpx, float buttonjumpy, int hints, int hintstext);
 int omg_box(float x, float y, float xdim, float ydim, int sucks, float buttonjumpx, float buttonjumpy, int hints);

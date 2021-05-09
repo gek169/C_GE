@@ -92,6 +92,7 @@ int main(int argc, char** argv) {
 	// initialize SDL video:
 	unsigned int fps = 60;
 	char needsRGBAFix = 0;
+	L_STATE = luaL_newstate();
 	if (argc > 2) {
 		char* larg = argv[1];
 		for (int i = 0; i < argc; i++) {
@@ -142,8 +143,15 @@ int main(int argc, char** argv) {
 	}
 	ZBuffer* frameBuffer = ZB_open(winSizeX, winSizeY, mode, 0);
 	glInit(frameBuffer);
-
-
+	createLuaBindings();
+	if (argc > 2) {
+		char* larg = argv[1];
+		for (int i = 0; i < argc; i++) {
+			if (!strcmp(larg, "-lua"))
+				luaL_dofile(L_STATE, argv[i]);
+			larg = argv[i];
+		}
+	}
 
 	initScene();
 
@@ -204,5 +212,6 @@ int main(int argc, char** argv) {
 	//Mix_FreeMusic(myTrack);
 	acleanup();
 	SDL_Quit();
+	lua_close(L_STATE);
 	return 0;
 }
