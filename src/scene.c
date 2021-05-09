@@ -50,7 +50,6 @@ LUA_EXPORT(omg_box){
 	lua_pushinteger(L, omg_box(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8));
 	return LUA_OK;
 }
-
 LUA_EXPORT(omg_textbox){
 	//int omg_textbox(float x, float y, const char* text, 
 	//int textsize, int sucks, float buttonjumpx, float buttonjumpy, int hints, int hintstext);
@@ -82,7 +81,6 @@ int lua_loadTexture(lua_State* L){
 	}
 	return LUA_OK;
 }
-
 int lua_setCamPos(lua_State* L){
 	campos.d[0] = lua_tonumber(L,1);
 	campos.d[1] = lua_tonumber(L,2);
@@ -146,7 +144,6 @@ int lua_set2D(lua_State* L){
 	else entity_world.world.is_2d = 0;
 	return LUA_OK;
 }
-
 int lua_buildSpriteDisplayList(lua_State* L){
 	LUA_FLOATARG(1); //width
 	arg1/=2.0;
@@ -160,7 +157,6 @@ int lua_buildSpriteDisplayList(lua_State* L){
 		glColor3f(1,1,1);
 		drawBox(-arg1/(float)winSizeX, -arg2/(float)winSizeY,
 				arg1/(float)winSizeX * 2.0, arg2/(float)winSizeY * 2.0); //centered.
-		glDisable(GL_TEXTURE_2D);
 	glEndList();
 	lua_pushinteger(L, display_list);
 	return LUA_OK;
@@ -201,7 +197,6 @@ int lua_buildModelDisplayList(lua_State* L){
 
 void createLuaBindings(){
 	lua_register(L_STATE, "loadTexture", lua_loadTexture);
-	lua_register(L_STATE, "buildModelDisplayList", lua_buildModelDisplayList);
 	lua_register(L_STATE, "bindTexture", lua_bindTexture);
 	lua_register(L_STATE, "callList", lua_callList);
 	lua_register(L_STATE, "deleteList", lua_deleteList);
@@ -212,12 +207,12 @@ void createLuaBindings(){
 	lua_register(L_STATE, "setPerspective", lua_setPerspective);
 	LUA_IMPORT(drawBox);
 	LUA_IMPORT(buildSpriteDisplayList);
+	LUA_IMPORT(buildModelDisplayList);
 	LUA_IMPORT(omg_box);
 	LUA_IMPORT(omg_textbox);
 	LUA_IMPORT(setTexturingEnabled);
 	LUA_IMPORT(resetProj);
 }
-
 void draw_menu() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
@@ -233,6 +228,7 @@ void draw_menu() {
 void draw_gameplay(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//TODO: invoke lua for draw.
+	luaL_dostring(L_STATE, "draw()");
 }
 void draw(){
 	if(is_in_menu) draw_menu();
@@ -250,6 +246,7 @@ void initScene() {
 		camrot = (vec3){{0,0,0}};
 	}
 	//TODO: invoke lua for initscene.
+	luaL_dostring(L_STATE, "init()");
 }
 
 
