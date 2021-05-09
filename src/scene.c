@@ -13,8 +13,11 @@ int is_in_menu = 0;
 #define LUA_FLOATARG(n) float arg##n = lua_tonumber(L, n);
 #define LUA_INTARG(n) int arg##n = lua_tointeger(L, n);
 #define LUA_STRINGARG(n) const char* arg##n = lua_tostring(L, n);
-#define MAX_TRACKS 1000
-#define MAX_SAMPS 1000
+#define LUA_INTGLOBSET(name) lua_pushinteger(L_STATE, name); lua_setglobal(L_STATE, #name);
+#define LUA_FLOATGLOBSET(name) lua_pushnumber(L_STATE, name); lua_setglobal(L_STATE, #name);
+#define LUA_STRINGGLOBSET(name) lua_pushstring(L_STATE, name); lua_setglobal(L_STATE, #name);
+#define MAX_TRACKS 2048
+#define MAX_SAMPS 2048
 track* tracks[MAX_TRACKS] = {0};
 samp* samps[MAX_SAMPS] = {0};
 #define MAX_ENTITIES 0x10000
@@ -28,6 +31,88 @@ mat4 camproj;
 
 
 /*LUA FUNCTIONS*/
+LUA_EXPORT(engine_abort){
+(void)L;
+	isRunning = 0;
+	return LUA_OK;
+}
+LUA_EXPORT(removeEntity){
+	
+}
+LUA_EXPORT(lmus){
+	LUA_INTARG(1);
+	LUA_STRINGARG(2);
+	if(tracks[arg1]) Mix_FreeMusic(tracks[arg1]);
+	tracks[arg1] = lmus(arg2);
+	return LUA_OK;
+}
+
+LUA_EXPORT(lwav){
+	LUA_INTARG(1);
+	LUA_STRINGARG(2);
+	if(samps[arg1]) {Mix_FreeChunk(samps[arg1]);}
+	samps[arg1] = lwav(arg2);
+	return LUA_OK;
+}
+
+LUA_EXPORT(aHalt){
+	LUA_INTARG(1);
+	aHalt(arg1);
+	return LUA_OK;
+}
+
+LUA_EXPORT(mhalt){
+	(void)L;
+	mhalt();
+	return LUA_OK;
+}
+
+LUA_EXPORT(aPos){
+	LUA_INTARG(1);
+	LUA_INTARG(2);
+	LUA_INTARG(3);
+	aPos(arg1, arg2, arg3);
+	return LUA_OK;
+}
+
+LUA_EXPORT(aplay){
+	LUA_INTARG(1);
+	LUA_INTARG(2);
+	if(samps[arg1]){
+		lua_pushinteger(L, aplay(samps[arg1], arg2));
+		return LUA_OK;
+	}
+	puts("Cannot play unloaded sample.");
+	return LUA_ERRERR;
+}
+
+
+LUA_EXPORT(mplay){
+	LUA_INTARG(1);
+	LUA_INTARG(2);
+	LUA_INTARG(3);
+	if(tracks[arg1]){
+		lua_pushinteger(L, mplay(tracks[arg1], arg2, arg3));
+		return LUA_OK;
+	}
+	puts("Cannot play unloaded track.");
+	return LUA_ERRERR;
+}
+
+LUA_EXPORT(dwav){
+	LUA_INTARG(1);
+	if(samps[arg1]) Mix_FreeChunk(samps[arg1]);
+	samps[arg1] = NULL;
+	return LUA_OK;
+}
+
+LUA_EXPORT(dmus){
+	LUA_INTARG(1);
+	if(tracks[arg1]) Mix_FreeMusic(tracks[arg1]);
+	tracks[arg1] = NULL;
+	return LUA_OK;
+}
+
 LUA_EXPORT(drawBox){
 	LUA_FLOATARG(1);
 	LUA_FLOATARG(2);
@@ -162,6 +247,8 @@ int lua_buildSpriteDisplayList(lua_State* L){
 	return LUA_OK;
 }
 
+
+
 int lua_buildModelDisplayList(lua_State* L){
 	const char* objname = lua_tostring(L, 1);
 	GLint texture_id = lua_tointeger(L, 2);
@@ -212,27 +299,46 @@ void createLuaBindings(){
 	LUA_IMPORT(omg_textbox);
 	LUA_IMPORT(setTexturingEnabled);
 	LUA_IMPORT(resetProj);
+	LUA_IMPORT(lmus);
+	LUA_IMPORT(lwav);
+	LUA_IMPORT(dmus);
+	LUA_IMPORT(dwav);
+	LUA_IMPORT(aplay);
+	LUA_IMPORT(mplay);
+	LUA_IMPORT(aHalt);
+	LUA_IMPORT(mhalt);
+	LUA_IMPORT(aPos);
+	LUA_IMPORT(engine_abort);
 }
 void draw_menu() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//TODO: invoke lua for draw menu.
+	/*
 	if (omg_textbox(0.01, 0.6, "\nQuit\n", 24, 1, 0.4, 0.2, 0xFFFFFF, 0) && omg_cb == 2) {
 		puts("Quitting...");
 		isRunning = 0;
 	}
+	*/
 	drawMouse();
+	luaL_dostring(L_STATE, "drawMenu()");
 }
 
 void draw_gameplay(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//TODO: invoke lua for draw.
+	//TODO: register global variables.
+	
 	luaL_dostring(L_STATE, "draw()");
 }
 void draw(){
+	lua_pushinteger(L_STATE, winSizeX); lua_setglobal(L_STATE, "winSizeX");
 	if(is_in_menu) draw_menu();
 	else draw_gameplay();
+}
+
+void cleanup(){
+	luaL_dostring(L_STATE, "cleanup()");
 }
 
 void initScene() {
@@ -245,7 +351,12 @@ void initScene() {
 		campos = (vec3){{0,0,0}};
 		camrot = (vec3){{0,0,0}};
 	}
+	entity_world.ents = calloc(1, MAX_ENTITIES);
+	entity_world.n_ents = 0;
+	entity_world.max_ents = MAX_ENTITIES;
 	//TODO: invoke lua for initscene.
+	lua_pushinteger(L_STATE, winSizeX); lua_setglobal(L_STATE, "winSizeX");
+	lua_pushinteger(L_STATE, winSizeY); lua_setglobal(L_STATE, "winSizeY");
 	luaL_dostring(L_STATE, "init()");
 }
 

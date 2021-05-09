@@ -204,6 +204,7 @@ int main(int argc, char** argv) {
 	}
 	//printf("%llu frames in %f secs, %f frames per second.\n", frames, (float)(tNow - tLastFps) * 0.001f, (float)frames * 1000.0f / (float)(tNow - tLastFps));
 	// cleanup:
+	cleanup();
 	ZB_close(frameBuffer);
 	glClose();
 	if (SDL_WasInit(SDL_INIT_VIDEO))

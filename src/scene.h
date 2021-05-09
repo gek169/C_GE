@@ -34,6 +34,7 @@ int winSizeX = 640;
 int winSizeY = 480;
 int isRunning = 1;
 int dirbstates[4] = {0, 0, 0, 0}; // up,down,left,right
+int sixbuttons[6] = {0,0,0,0,0,0}; //ASD ZXC, corresponding to the buttons on a controller.
 int mousepos[2] = {0, 0};
 int using_cursorkeys = 0; // Switches to cursor keys upon pressing a key.
 int mb = 0;				  // cursor button
@@ -54,6 +55,7 @@ void events(SDL_Event* e);
 void initScene();
 void createLuaBindings();
 void draw();
+void cleanup();
 int omg_textbox(float x, float y, const char* text, int textsize, int sucks, float buttonjumpx, float buttonjumpy, int hints, int hintstext);
 int omg_box(float x, float y, float xdim, float ydim, int sucks, float buttonjumpx, float buttonjumpy, int hints);
 void drawTB(const char* text, GLuint textcolor, GLfloat x, GLfloat y, GLint size, float* tw, float* th);
