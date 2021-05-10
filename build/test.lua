@@ -6,10 +6,12 @@ function drawMenu()
 	ld_vec3(0, 0, 0, 0);
 	build_camview2D(0);
 	applyCamera2D();
-	ld_mat4(1,0,0,0,
+	ld_mat4(0,
+			1,0,0,0,
 			0,1,0,0,
 			0,0,1,0,
 			0,0,0,1);
+	glMultMatrixf(0);
 	if (0 < omg_box(0.1,0.1,0.3,0.3,  0, 0,0, 0x00FFffFF) and omg_cb == 2) then
 		print("You Clicked? Aborting...");
 		engine_abort();
