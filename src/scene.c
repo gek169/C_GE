@@ -916,7 +916,7 @@ int lua_buildRectangleDL(lua_State* L){
 }
 
 
-int lua_buildModelDL(lua_State* L){
+LUA_EXPORT(buildModelDL){
 	const char* objname = lua_tostring(L, 1);
 	GLint texture_id = lua_tointeger(L, 2);
 	{
@@ -957,7 +957,7 @@ void createLuaBindings(){
 	lua_register(L_STATE, "deleteList", lua_deleteList);
 	lua_register(L_STATE, "deleteTexture", lua_deleteTexture);
 	lua_register(L_STATE, "set2D", lua_set2D);
-	lua_register(L_STATE, "setPerspective", lua_setPerspective);
+	LUA_IMPORT(setPerspective);
 	LUA_IMPORT(drawBox);
 	LUA_IMPORT(buildSpriteDL);
 	LUA_IMPORT(buildRectangleDL);
