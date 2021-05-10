@@ -146,7 +146,8 @@ int main(int argc, char** argv) {
 		char* larg = argv[1];
 		for (int i = 0; i < argc; i++) {
 			if (!strcmp(larg, "-lua"))
-				luaL_dofile(L_STATE, argv[i]);
+				if(luaL_dofile(L_STATE, argv[i]))
+					printf("%s\n", lua_tostring(L_STATE, -1));
 			larg = argv[i];
 		}
 	}
