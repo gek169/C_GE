@@ -87,6 +87,151 @@ LUA_EXPORT(multm4){
 	mat4regs[arg1] = multm4(mat4regs[arg2], mat4regs[arg3]);
 	return 0;
 }
+LUA_EXPORT(setEnableDepthTest){
+	LUA_INTARG(1);
+	if(arg1) glEnable(GL_DEPTH_TEST);
+	else	glDisable(GL_DEPTH_TEST);
+	return 0;
+}
+LUA_EXPORT(setEnableLighting){
+	LUA_INTARG(1);
+	if(arg1) glEnable(GL_LIGHTING);
+	else	glDisable(GL_LIGHTING);
+	return 0;
+}
+LUA_EXPORT(setCullingMode){
+	LUA_INTARG(1);
+	if(arg1) 
+	{	LUA_INTARG(2);
+		glEnable(GL_CULL_FACE);
+		if(arg2) glCullFace(GL_BACK);
+		else glCullFace(GL_FRONT);
+	}
+	else	glDisable(GL_CULL_FACE);
+	return 0;
+}
+LUA_EXPORT(setEnableColorMaterial){
+	LUA_INTARG(1);
+	if(arg1) {glEnable(GL_COLOR_MATERIAL);}
+	else	{glDisable(GL_COLOR_MATERIAL);}
+	return 0;
+}
+LUA_EXPORT(setEnableLight){
+	LUA_INTARG(1); //the light id.
+	LUA_INTARG(2); //the light toggle
+	if(arg2) {glEnable(GL_LIGHT0 + arg1);}
+	else	{glDisable(GL_LIGHT0 + arg1);}
+	return 0;
+}
+LUA_EXPORT(setLightProps){
+	LUA_INTARG(1); //light id.
+	LUA_INTARG(2); //property to set.
+	GLfloat arr[4];
+	if(arg2 == 0){
+		LUA_FLOATARG(3);
+		LUA_FLOATARG(4);
+		LUA_FLOATARG(5);
+		LUA_FLOATARG(6);
+		arr[0] = arg3; arr[1] = arg4; arr[2] = arg5; arr[3] = arg6;
+		glLightfv(GL_LIGHT0 + arg1, GL_AMBIENT, arr);
+		return 0;
+	} else if(arg2 == 1){
+		LUA_FLOATARG(3);
+		LUA_FLOATARG(4);
+		LUA_FLOATARG(5);
+		LUA_FLOATARG(6);
+		arr[0] = arg3; arr[1] = arg4; arr[2] = arg5; arr[3] = arg6;
+		glLightfv(GL_LIGHT0 + arg1, GL_DIFFUSE, arr);
+		return 0;
+	}else if(arg2 == 2){
+		LUA_FLOATARG(3);
+		LUA_FLOATARG(4);
+		LUA_FLOATARG(5);
+		LUA_FLOATARG(6);
+		arr[0] = arg3; arr[1] = arg4; arr[2] = arg5; arr[3] = arg6;
+		glLightfv(GL_LIGHT0 + arg1, GL_SPECULAR, arr);
+		return 0;
+	}else if(arg2 == 3){
+		LUA_FLOATARG(3);
+		LUA_FLOATARG(4);
+		LUA_FLOATARG(5);
+		LUA_FLOATARG(6);
+		arr[0] = arg3; arr[1] = arg4; arr[2] = arg5; arr[3] = arg6;
+		glLightfv(GL_LIGHT0 + arg1, GL_POSITION, arr);
+		return 0;
+	}else if(arg2 == 4){
+		LUA_FLOATARG(3);
+		LUA_FLOATARG(4);
+		LUA_FLOATARG(5);
+		//LUA_FLOATARG(6);
+		arr[0] = arg3; arr[1] = arg4; arr[2] = arg5; //arr[3] = arg6;
+		glLightfv(GL_LIGHT0 + arg1, GL_SPOT_DIRECTION, arr);
+		return 0;
+	}else if(arg2 == 5){
+			LUA_FLOATARG(3);
+			//LUA_FLOATARG(4);
+			//LUA_FLOATARG(5);
+			//LUA_FLOATARG(6);
+			arr[0] = arg3; //arr[1] = arg4; arr[2] = arg5; arr[3] = arg6;
+			glLightfv(GL_LIGHT0 + arg1, GL_SPOT_EXPONENT, arr);
+			return 0;
+	}else if(arg2 == 6){
+		LUA_FLOATARG(3);
+		//LUA_FLOATARG(4);
+		//LUA_FLOATARG(5);
+		//LUA_FLOATARG(6);
+		arr[0] = arg3; //arr[1] = arg4; arr[2] = arg5; arr[3] = arg6;
+		glLightfv(GL_LIGHT0 + arg1, GL_SPOT_CUTOFF, arr);
+		return 0;
+	}else if(arg2 == 7){
+		LUA_FLOATARG(3);
+		//LUA_FLOATARG(4);
+		//LUA_FLOATARG(5);
+		//LUA_FLOATARG(6);
+		arr[0] = arg3; //arr[1] = arg4; arr[2] = arg5; arr[3] = arg6;
+		glLightfv(GL_LIGHT0 + arg1, GL_CONSTANT_ATTENUATION, arr);
+		return 0;
+	}else if(arg2 == 8){
+		LUA_FLOATARG(3);
+		//LUA_FLOATARG(4);
+		//LUA_FLOATARG(5);
+		//LUA_FLOATARG(6);
+		arr[0] = arg3; //arr[1] = arg4; arr[2] = arg5; arr[3] = arg6;
+		glLightfv(GL_LIGHT0 + arg1, GL_LINEAR_ATTENUATION, arr);
+		return 0;
+	}else if(arg2 == 9){
+		LUA_FLOATARG(3);
+		//LUA_FLOATARG(4);
+		//LUA_FLOATARG(5);
+		//LUA_FLOATARG(6);
+		arr[0] = arg3; //arr[1] = arg4; arr[2] = arg5; arr[3] = arg6;
+		glLightfv(GL_LIGHT0 + arg1, GL_QUADRATIC_ATTENUATION, arr);
+		return 0;
+	}
+
+	return 0;
+}
+LUA_EXPORT(setColorMaterialMode){
+	LUA_INTARG(1);
+	LUA_INTARG(2);
+	if(arg1 == 0){
+		arg1 = GL_FRONT;
+	} else if (arg1 == 1){
+		arg1 = GL_BACK;
+	} else
+		arg1 = GL_FRONT_AND_BACK;
+	if(arg2 == 0){
+		arg2 = GL_AMBIENT_AND_DIFFUSE;
+	} else if (arg2 == 1){
+		arg2 = GL_DIFFUSE;
+	} else if (arg2 == 3){
+		arg2 = GL_AMBIENT;
+	} else if (arg2 == 4){
+		arg2 = GL_SPECULAR;
+	} else arg2 = GL_EMISSION;
+	glColorMaterial(arg1, GL_AMBIENT_AND_DIFFUSE);
+	return 0;
+}
 LUA_EXPORT(invmat4){
 	LUA_INTARG(1);
 	mat4 out;
@@ -225,19 +370,24 @@ LUA_EXPORT(dotv4){
 	LUA_FLOATPUSH(dotv4(vec4regs[arg1], vec4regs[arg2]));
 	return 1;
 }
-LUA_EXPORT(entity_setdl){
+LUA_EXPORT(stepChadWorld){
+	(void)L;
+	stepChadWorld(&entity_world, 1);
+	return 0;
+}
+LUA_EXPORT(entity_setDL){
 	LUA_INTARG(1); //entity id
 	LUA_INTARG(2); //display list
 	entities[arg1].dl = arg2;
 	return 0;
 }
-LUA_EXPORT(entity_setmass){
+LUA_EXPORT(entity_setMass){
 	LUA_INTARG(1); //entity id
 	LUA_FLOATARG(2); //mass
 	entities[arg1].body.mass = arg2;
 	return 0;
 }
-LUA_EXPORT(entity_setvelocity){
+LUA_EXPORT(entity_setVelocity){
 	LUA_INTARG(1); //entity id
 	LUA_FLOATARG(2); //x
 	LUA_FLOATARG(3); //y
@@ -247,21 +397,21 @@ LUA_EXPORT(entity_setvelocity){
 	entities[arg1].body.v.d[2] = arg4;
 	return 0;
 }
-LUA_EXPORT(entity_getvelocity){
+LUA_EXPORT(entity_getVelocity){
 	LUA_INTARG(1); //entity id
 	lua_pushnumber(L, entities[arg1].body.v.d[0]);
 	lua_pushnumber(L, entities[arg1].body.v.d[1]);
 	lua_pushnumber(L, entities[arg1].body.v.d[2]);
 	return 3;
 }
-LUA_EXPORT(entity_getaccel){
+LUA_EXPORT(entity_getAccel){
 	LUA_INTARG(1); //entity id
 	lua_pushnumber(L, entities[arg1].body.a.d[0]);
 	lua_pushnumber(L, entities[arg1].body.a.d[1]);
 	lua_pushnumber(L, entities[arg1].body.a.d[2]);
 	return 3;
 }
-LUA_EXPORT(entity_setaccel){
+LUA_EXPORT(entity_setAccel){
 	LUA_INTARG(1); //entity id
 	LUA_FLOATARG(2); //x
 	LUA_FLOATARG(3); //y
@@ -271,7 +421,7 @@ LUA_EXPORT(entity_setaccel){
 	entities[arg1].body.a.d[2] = arg4;
 	return 0;
 }
-LUA_EXPORT(entity_setshape){
+LUA_EXPORT(entity_setShape){
 	LUA_INTARG(1); //entity id
 	LUA_FLOATARG(2); //x
 	LUA_FLOATARG(3); //y
@@ -290,7 +440,7 @@ LUA_EXPORT(entity_setshape){
 	entities[arg1].body.shape.e.d[2] = arg8;	
 	return 0;
 }
-LUA_EXPORT(entity_getshape){
+LUA_EXPORT(entity_getShape){
 	LUA_INTARG(1); //entity id
 	lua_pushnumber(L, entities[arg1].body.shape.c.d[0]);
 	lua_pushnumber(L, entities[arg1].body.shape.c.d[1]);
@@ -302,51 +452,51 @@ LUA_EXPORT(entity_getshape){
 	lua_pushnumber(L, entities[arg1].body.shape.e.d[2]);
 	return 7;
 }
-LUA_EXPORT(entity_setbounciness){
+LUA_EXPORT(entity_setBounciness){
 	LUA_INTARG(1); //entity id
 	LUA_FLOATARG(2); //mass
 	entities[arg1].body.bounciness = arg2;
 	return 0;
 }
-LUA_EXPORT(entity_setfriction){
+LUA_EXPORT(entity_setFriction){
 	LUA_INTARG(1); //entity id
 	LUA_FLOATARG(2); //mass
 	entities[arg1].body.friction = arg2;
 	return 0;
 }
-LUA_EXPORT(entity_setairfriction){
+LUA_EXPORT(entity_setAirFriction){
 	LUA_INTARG(1); //entity id
 	LUA_FLOATARG(2); //mass
 	entities[arg1].body.airfriction = arg2;
 	return 0;
 }
-LUA_EXPORT(entity_getmass){
+LUA_EXPORT(entity_getMass){
 	LUA_INTARG(1); //entity id
 	lua_pushinteger(L, entities[arg1].body.mass);
 	return 1;
 }
-LUA_EXPORT(entity_getbounciness){
+LUA_EXPORT(entity_getBounciness){
 	LUA_INTARG(1); //entity id
 	lua_pushinteger(L, entities[arg1].body.bounciness);
 	return 1;
 }
-LUA_EXPORT(entity_getfriction){
+LUA_EXPORT(entity_getFriction){
 	LUA_INTARG(1); //entity id
 	lua_pushinteger(L, entities[arg1].body.friction);
 	return 1;
 }
-LUA_EXPORT(entity_getairfriction){
+LUA_EXPORT(entity_getAirFriction){
 	LUA_INTARG(1); //entity id
 	lua_pushinteger(L, entities[arg1].body.airfriction);
 	return 1;
 }
-LUA_EXPORT(entity_getdl){
+LUA_EXPORT(entity_getDL){
 	LUA_INTARG(1); //entity id
 	lua_pushinteger(L, entities[arg1].dl);
 	return 1;
 }
 
-LUA_EXPORT(setgravity){
+LUA_EXPORT(setGravity){
 	LUA_FLOATARG(1);
 	LUA_FLOATARG(2);
 	LUA_FLOATARG(3);
@@ -355,17 +505,17 @@ LUA_EXPORT(setgravity){
 	entity_world.world.g.d[2] = arg3;
 	return 0;
 }
-LUA_EXPORT(setms){
+LUA_EXPORT(setMS){
 	LUA_FLOATARG(1);
 	entity_world.world.ms = arg1;
 	return 0;
 }
-LUA_EXPORT(getms){
+LUA_EXPORT(getMS){
 	(void)L;
 	lua_pushnumber(L, entity_world.world.ms);
 	return 1;
 }
-LUA_EXPORT(getgravity){
+LUA_EXPORT(getGravity){
 	(void)L;
 	lua_pushnumber(L, entity_world.world.g.d[0]);
 	lua_pushnumber(L, entity_world.world.g.d[1]);
@@ -377,27 +527,28 @@ LUA_EXPORT(engine_abort){
 	isRunning = 0;
 	return 0;
 }
-LUA_EXPORT(get_maxents){
+LUA_EXPORT(get_maxEnts){
 (void)L;
 	lua_pushinteger(L, entity_world.max_ents);
 	return 1;
 }
-LUA_EXPORT(get_nents){
+LUA_EXPORT(get_nEnts){
 (void)L;
 	lua_pushinteger(L, entity_world.n_ents);
 	return 1;
 }
 LUA_EXPORT(removeEntity){
 	LUA_INTARG(1);
-	ChadWorld_RemoveEntity(&entity_world, arg1);
+	ChadWorld_RemoveEntityByPointer(&entity_world, entities + arg1);
 	return 0;
 }
 LUA_EXPORT(addEntity){
 	LUA_INTARG(1);
 	ChadWorld_AddEntity(&entity_world, entities + arg1);
+	//LUA_INTPUSH(r);
 	return 0;
 }
-LUA_EXPORT(lmus){
+LUA_EXPORT(lMus){
 	LUA_INTARG(1);
 	LUA_STRINGARG(2);
 	if(tracks[arg1]) Mix_FreeMusic(tracks[arg1]);
@@ -405,7 +556,7 @@ LUA_EXPORT(lmus){
 	return 0;
 }
 
-LUA_EXPORT(lwav){
+LUA_EXPORT(lWav){
 	LUA_INTARG(1);
 	LUA_STRINGARG(2);
 	if(samps[arg1]) {Mix_FreeChunk(samps[arg1]);}
@@ -419,7 +570,7 @@ LUA_EXPORT(aHalt){
 	return 0;
 }
 
-LUA_EXPORT(mhalt){
+LUA_EXPORT(mHalt){
 	(void)L;
 	mhalt();
 	return 0;
@@ -433,7 +584,7 @@ LUA_EXPORT(aPos){
 	return 0;
 }
 
-LUA_EXPORT(aplay){
+LUA_EXPORT(aPlay){
 	LUA_INTARG(1);
 	LUA_INTARG(2);
 	if(samps[arg1]){
@@ -462,7 +613,7 @@ LUA_EXPORT(applyCamera2D){
 
 
 
-LUA_EXPORT(mplay){
+LUA_EXPORT(mPlay){
 	LUA_INTARG(1);
 	LUA_INTARG(2);
 	LUA_INTARG(3);
@@ -475,14 +626,14 @@ LUA_EXPORT(mplay){
 	return 1;
 }
 
-LUA_EXPORT(dwav){
+LUA_EXPORT(dWav){
 	LUA_INTARG(1);
 	if(samps[arg1]) Mix_FreeChunk(samps[arg1]);
 	samps[arg1] = NULL;
 	return 0;
 }
 
-LUA_EXPORT(dmus){
+LUA_EXPORT(dMus){
 	LUA_INTARG(1);
 	if(tracks[arg1]) Mix_FreeMusic(tracks[arg1]);
 	tracks[arg1] = NULL;
@@ -626,7 +777,7 @@ int lua_set2D(lua_State* L){
 	else entity_world.world.is_2d = 0;
 	return 0;
 }
-int lua_buildSpriteDisplayList(lua_State* L){
+int lua_buildSpriteDL(lua_State* L){
 	LUA_FLOATARG(1); //width
 	arg1/=2.0;
 	LUA_FLOATARG(2); //height
@@ -647,7 +798,7 @@ int lua_buildSpriteDisplayList(lua_State* L){
 
 
 
-int lua_buildModelDisplayList(lua_State* L){
+int lua_buildModelDL(lua_State* L){
 	const char* objname = lua_tostring(L, 1);
 	GLint texture_id = lua_tointeger(L, 2);
 	{
@@ -690,15 +841,15 @@ void createLuaBindings(){
 	lua_register(L_STATE, "set2D", lua_set2D);
 	lua_register(L_STATE, "setPerspective", lua_setPerspective);
 	LUA_IMPORT(drawBox);
-	LUA_IMPORT(buildSpriteDisplayList);
-	LUA_IMPORT(buildModelDisplayList);
+	LUA_IMPORT(buildSpriteDL);
+	LUA_IMPORT(buildModelDL);
 	LUA_IMPORT(omg_box);
 	LUA_IMPORT(omg_textbox);
 	LUA_IMPORT(setTexturingEnabled);
 	LUA_IMPORT(resetProj);
 	LUA_IMPORT(removeEntity);
 	LUA_IMPORT(addEntity);
-	LUA_IMPORT(lmus);
+	LUA_IMPORT(lMus);
 	LUA_IMPORT(lwav);
 	LUA_IMPORT(dmus);
 	LUA_IMPORT(dwav);
@@ -759,7 +910,17 @@ void createLuaBindings(){
 	LUA_IMPORT(glPopMatrix);
 	LUA_IMPORT(glMultMatrixf);
 	LUA_IMPORT(lookAt);
+	LUA_IMPORT(setEnableDepthTest);
+	LUA_IMPORT(setEnableLighting);
+	LUA_IMPORT(setEnableColorMaterial);
+	LUA_IMPORT(setColorMaterialMode);
+	LUA_IMPORT(setEnableLight);
+	LUA_IMPORT(setLightProps);
+	LUA_IMPORT(setCullingMode);
+	LUA_IMPORT(stepChadWorld);
 }
+
+
 void setGlobals(){
 	int button1 = sixbuttons[0];
 	int button2 = sixbuttons[1];
