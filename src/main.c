@@ -31,9 +31,6 @@ void drawBox(GLfloat x, GLfloat y, GLfloat xdim, GLfloat ydim) { // 0,0 is top l
 	glEnd();
 	return;
 }
-
-
-
 void drawTB(const char* text, GLuint textcolor, GLfloat x, GLfloat y, GLint size, float* tw, float* th) {
 	size = (size > 64) ? 64 : ((size < 8) ? 8 : size);
 	size >>= 3; // divide by 8 to get the GLTEXTSIZE
