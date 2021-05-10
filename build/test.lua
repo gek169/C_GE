@@ -17,9 +17,9 @@ do
 		entity_setAirFriction(last_ent, 0.999);
 		entity_setBounciness(last_ent, 0);
 		entity_setShape(last_ent,
-			math.random(-800,800)/1000.0 + 1.0,
+			{math.random(-800,800)/1000.0 + 1.0,
 			math.random(-200,200)/1000.0 - 1.0, 0, 20/winSizeX,
-			0,0,0,0);
+			0,0,0,0});
 		entity_setVelocity(last_ent,
 			0, 
 			0, 0);
@@ -40,15 +40,10 @@ do
 		entity_setAirFriction(last_ent, 0.999);
 		entity_setBounciness(last_ent, 0);
 		entity_setShape(last_ent,
-			x,-1.0,0, 0,
-			20.0/winSizeX, 1.0, 1000,0);
+			{x,-1.0,0, 0,
+			20.0/winSizeX, 1.0, 1000,0});
 		entity_setVelocity(last_ent,
 			0, 0, 0);
-		ld_mat4(0,
-			{1,0,0,0,
-			0,1,0,0,
-			0,0,1,0,
-			0,0,0,1});
 		entity_setLocalT(last_ent,
 							{1,0,0,0,
 							0,1,0,0,
@@ -66,8 +61,8 @@ do
 		entity_setAirFriction(last_ent, 0.999);
 		entity_setBounciness(last_ent, 0);
 		entity_setShape(last_ent,
-			1.0,y,0, 0,
-			1.0,20.0/winSizeY,1000,0);
+			{1.0,y,0, 0,
+			1.0,20.0/winSizeY,1000,0});
 		entity_setVelocity(last_ent,
 			0, 0, 0);
 		entity_setLocalT(last_ent,
@@ -82,10 +77,9 @@ do
 end
 
 function drawMenu()
-	ld_vec3(0, 0, 0, 0);
-	build_camview2D(0);
+	build_camview2D({0, 0, 0, 0});
 	applyCamera2D();
-	glTranslatef({1.0,0,0});
+	--glTranslatef({1.0,0,0});
 	glMultMatrixf({
 		1,0,0,0,
 		0,1,0,0,
@@ -115,7 +109,9 @@ function init()
 	platform_display_list = buildRectangleDL(1.0, 10.0/winSizeY, 	0.0, 1.0, 0.0);
 	wall_display_list = buildRectangleDL(20.0/winSizeY,1.0, 	0.0, 1.0, 0.0);
 	--Build some entities.
-	setGravity(0,-0.001,0);
+	setGravity({0,-0.001,0});
+	print("Gravity IS::::");
+	print(getGravity()[1]);
 	setMS(200);
 	createBall();
 	createBall();
@@ -130,9 +126,7 @@ end
 function draw()
 	ticker = ticker + 0.016666666;
 	local sin = math.sin;
-		ld_vec3(2, 
-					{sin(ticker), 0, 0});
-		build_camview2D(2); 
+		build_camview2D({0, sin(ticker), 0, 0});
 		applyCamera2D();
 	if(button1 > 0) then
 		createBall();

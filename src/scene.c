@@ -45,6 +45,10 @@ static inline void popMat4fromArray(lua_State* L,mat4* dest){
 	for(long i = 0; i < 16; i++)
 		dest->d[i] = popFloatFromArray(L, 1 + i);
 }
+static inline void popFloatArray(lua_State* L, float* dest, long count){
+	for(long i = 0; i < count; i++)
+		dest[i] = popFloatFromArray(L, 1 + i);
+}
 static inline void popVec3fromArray(lua_State* L,vec3* dest){
 	for(long i = 0; i < 3; i++)
 		dest->d[i] = popFloatFromArray(L, 1 + i);
@@ -455,68 +459,53 @@ LUA_EXPORT(entity_setMass){
 }
 LUA_EXPORT(entity_setVelocity){
 	LUA_INTARG(1); //entity id
-	LUA_FLOATARG(2); //x
-	LUA_FLOATARG(3); //y
-	LUA_FLOATARG(4); //z
-	entities[arg1].body.v.d[0] = arg2;
-	entities[arg1].body.v.d[1] = arg3;
-	entities[arg1].body.v.d[2] = arg4;
+	vec3 temp;
+	popVec3fromArray(L, &temp);
+	entities[arg1].body.v = temp;
 	return 0;
 }
 LUA_EXPORT(entity_getVelocity){
 	LUA_INTARG(1); //entity id
-	lua_pushnumber(L, entities[arg1].body.v.d[0]);
-	lua_pushnumber(L, entities[arg1].body.v.d[1]);
-	lua_pushnumber(L, entities[arg1].body.v.d[2]);
-	return 3;
+	PushFloatArray(L, entities[arg1].body.v.d, 3);
+	return 1;
 }
 LUA_EXPORT(entity_getAccel){
 	LUA_INTARG(1); //entity id
-	lua_pushnumber(L, entities[arg1].body.a.d[0]);
-	lua_pushnumber(L, entities[arg1].body.a.d[1]);
-	lua_pushnumber(L, entities[arg1].body.a.d[2]);
-	return 3;
+	PushFloatArray(L, entities[arg1].body.a.d, 3);
+	return 1;
 }
 LUA_EXPORT(entity_setAccel){
 	LUA_INTARG(1); //entity id
-	LUA_FLOATARG(2); //x
-	LUA_FLOATARG(3); //y
-	LUA_FLOATARG(4); //z
-	entities[arg1].body.a.d[0] = arg2;
-	entities[arg1].body.a.d[1] = arg3;
-	entities[arg1].body.a.d[2] = arg4;
+	vec3 temp;
+	popVec3fromArray(L, &temp);
+	entities[arg1].body.a = temp;
 	return 0;
 }
 LUA_EXPORT(entity_setShape){
 	LUA_INTARG(1); //entity id
-	LUA_FLOATARG(2); //x
-	LUA_FLOATARG(3); //y
-	LUA_FLOATARG(4); //z
-	LUA_FLOATARG(5); //w
-	LUA_FLOATARG(6); //ex
-	LUA_FLOATARG(7); //ey
-	LUA_FLOATARG(8); //ez
-	entities[arg1].body.shape.c.d[0] = arg2;
-	entities[arg1].body.shape.c.d[1] = arg3;
-	entities[arg1].body.shape.c.d[2] = arg4;
-	entities[arg1].body.shape.c.d[3] = arg5;
-
-	entities[arg1].body.shape.e.d[0] = arg6;
-	entities[arg1].body.shape.e.d[1] = arg7;
-	entities[arg1].body.shape.e.d[2] = arg8;	
+	float temp[7];
+	popFloatArray(L, temp, 7);
+	entities[arg1].body.shape.c.d[0] = temp[0];
+	entities[arg1].body.shape.c.d[1] = temp[1];
+	entities[arg1].body.shape.c.d[2] = temp[2];
+	entities[arg1].body.shape.c.d[3] = temp[3];
+	entities[arg1].body.shape.e.d[0] = temp[4];
+	entities[arg1].body.shape.e.d[1] = temp[5];
+	entities[arg1].body.shape.e.d[2] = temp[6];	
 	return 0;
 }
 LUA_EXPORT(entity_getShape){
 	LUA_INTARG(1); //entity id
-	lua_pushnumber(L, entities[arg1].body.shape.c.d[0]);
-	lua_pushnumber(L, entities[arg1].body.shape.c.d[1]);
-	lua_pushnumber(L, entities[arg1].body.shape.c.d[2]);
-	lua_pushnumber(L, entities[arg1].body.shape.c.d[3]);
-	
-	lua_pushnumber(L, entities[arg1].body.shape.e.d[0]);
-	lua_pushnumber(L, entities[arg1].body.shape.e.d[1]);
-	lua_pushnumber(L, entities[arg1].body.shape.e.d[2]);
-	return 7;
+	float temp[7];
+	temp[0] = (entities[arg1].body.shape.c.d[0]);
+	temp[1] = (entities[arg1].body.shape.c.d[1]);
+	temp[2] = (entities[arg1].body.shape.c.d[2]);
+	temp[3] = (entities[arg1].body.shape.c.d[3]);
+	temp[4] = (entities[arg1].body.shape.e.d[0]);
+	temp[5] = (entities[arg1].body.shape.e.d[1]);
+	temp[6] = (entities[arg1].body.shape.e.d[2]);
+	PushFloatArray(L, temp, 7);
+	return 1;
 }
 LUA_EXPORT(entity_setBounciness){
 	LUA_INTARG(1); //entity id
@@ -561,14 +550,10 @@ LUA_EXPORT(entity_getDL){
 	lua_pushinteger(L, entities[arg1].dl);
 	return 1;
 }
-
 LUA_EXPORT(setGravity){
-	LUA_FLOATARG(1);
-	LUA_FLOATARG(2);
-	LUA_FLOATARG(3);
-	entity_world.world.g.d[0] = arg1;
-	entity_world.world.g.d[1] = arg2;
-	entity_world.world.g.d[2] = arg3;
+	vec3 temp;
+	popVec3fromArray(L, &temp);
+	entity_world.world.g = temp;
 	return 0;
 }
 LUA_EXPORT(setMS){
@@ -583,10 +568,8 @@ LUA_EXPORT(getMS){
 }
 LUA_EXPORT(getGravity){
 	(void)L;
-	lua_pushnumber(L, entity_world.world.g.d[0]);
-	lua_pushnumber(L, entity_world.world.g.d[1]);
-	lua_pushnumber(L, entity_world.world.g.d[2]);
-	return 3;
+	PushFloatArray(L, entity_world.world.g.d, 3);
+	return 1;
 }
 LUA_EXPORT(engine_abort){
 (void)L;
@@ -746,35 +729,50 @@ LUA_EXPORT(omg_textbox){
 	return 1;
 }
 LUA_EXPORT(build_camview){
-	LUA_INTARG(1);
-	LUA_INTARG(2);
-	LUA_INTARG(3);
+	vec3 temp1;
+	vec3 temp2;
+	vec3 temp3;
+	popVec3fromArray(L, &temp3);lua_pop(L, 1);
+	popVec3fromArray(L, &temp2);lua_pop(L, 1);
+	popVec3fromArray(L, &temp1);lua_pop(L, 1);
 	camview = lookAt(
-						vec3regs[arg1], 
-						vec3regs[arg2],
-						vec3regs[arg3]);
-	return 0;
+						temp1, 
+						temp2,
+						temp3);
+	PushFloatArray(L, camview.d, 16);
+	return 1;
 }
 LUA_EXPORT(lookAt){
-	LUA_INTARG(1);
-	LUA_INTARG(2);
-	LUA_INTARG(3);
-	LUA_INTARG(4);
-	mat4regs[arg1] = lookAt(
-						vec3regs[arg2], 
-						vec3regs[arg3],
-						vec3regs[arg4]);
-	return 0;
+	mat4 retval;
+	vec3 temp1;
+	vec3 temp2;
+	vec3 temp3;
+	popVec3fromArray(L, &temp3);lua_pop(L, 1);
+	popVec3fromArray(L, &temp2);lua_pop(L, 1);
+	popVec3fromArray(L, &temp1);lua_pop(L, 1);
+	retval = lookAt(
+						temp1, 
+						temp2,
+						temp3);
+	PushFloatArray(L, retval.d, 16);
+	return 1;
 }
 LUA_EXPORT(build_camview2D){
-	LUA_INTARG(1);
-	camview = translate(vec3regs[arg1]);
+	vec3 temp;
+	popVec3fromArray(L, &temp);
+	camview = translate(temp);
 	return 0;
 }
+LUA_EXPORT(translate){
+	vec3 temp; mat4 res;
+	popVec3fromArray(L, &temp);
+	res = translate(temp);
+	PushFloatArray(L, res.d, 16);
+	return 1;
+}
 LUA_EXPORT(get_camview){
-	for(int i = 0; i < 16; i++)
-		LUA_FLOATPUSH(camview.d[i]);
-	return 16;
+	PushFloatArray(L, camview.d, 16);
+	return 1;
 }
 int lua_loadTexture(lua_State* L){
 	const char* texturename = lua_tostring(L, 1);
@@ -796,7 +794,8 @@ int lua_loadTexture(lua_State* L){
 int lua_resetProj(lua_State* L){
 	(void)L;
 	camproj = identitymat4();
-	return 0;
+	PushFloatArray(L, camproj.d, 16);
+	return 1;
 }
 int lua_setPerspective(lua_State* L){
 	LUA_FLOATARG(1);
@@ -805,6 +804,16 @@ int lua_setPerspective(lua_State* L){
 	LUA_FLOATARG(4);
 	camproj = perspective(arg1,arg2,arg3,arg4);
 	return 0;
+}
+LUA_EXPORT(perspective){
+	mat4 retval;
+	LUA_FLOATARG(1);
+	LUA_FLOATARG(2);
+	LUA_FLOATARG(3);
+	LUA_FLOATARG(4);
+	retval = perspective(arg1,arg2,arg3,arg4);
+	PushFloatArray(L, retval.d, 16);
+	return 1;
 }
 
 int lua_bindTexture(lua_State* L){
@@ -1007,6 +1016,8 @@ void createLuaBindings(){
 	LUA_IMPORT(stepChadWorld);
 	LUA_IMPORT(renderChadWorld);
 	LUA_IMPORT(glScalef);
+	LUA_IMPORT(perspective);
+	LUA_IMPORT(translate);
 }
 
 
