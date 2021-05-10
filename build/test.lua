@@ -77,6 +77,7 @@ do
 end
 
 function drawMenu()
+	glClear();
 	build_camview2D({0, 0, 0, 0});
 	applyCamera2D();
 	--glTranslatef({1.0,0,0});
@@ -107,7 +108,7 @@ function init()
 	boing_texture = loadTexture("boing.png");
 	boing_display_list = buildSpriteDL(20.0/winSizeX, 20.0/winSizeY, boing_texture);
 	platform_display_list = buildRectangleDL(1.0, 10.0/winSizeY, 	0.0, 1.0, 0.0);
-	wall_display_list = buildRectangleDL(20.0/winSizeY,1.0, 	0.0, 1.0, 0.0);
+	wall_display_list = buildRectangleDL(20.0/winSizeY,1.0, 	1.0, 0.0, 0.0);
 	--Build some entities.
 	setGravity({0,-0.001,0});
 	print("Gravity IS::::");
@@ -124,6 +125,7 @@ end
 
 
 function draw()
+	glClear();
 	ticker = ticker + 0.016666666;
 	local sin = math.sin;
 		build_camview2D({0, sin(ticker), 0, 0});

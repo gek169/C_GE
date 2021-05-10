@@ -96,6 +96,17 @@ vec3 vec3regs[20];
 vec4 vec4regs[20];
 
 /*LUA FUNCTIONS*/
+LUA_EXPORT(glClearColor){
+	vec4 temp;
+	popVec4fromArray(L, &temp);
+	glClearColor(temp.d[0],	temp.d[1], temp.d[2], temp.d[3]);
+	return 0;
+}
+LUA_EXPORT(glClear){
+	(void)L;
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	return 0;
+}
 LUA_EXPORT(glTranslatef){
 	vec3 temp;
 	popVec3fromArray(L, &temp);
@@ -1018,6 +1029,8 @@ void createLuaBindings(){
 	LUA_IMPORT(glScalef);
 	LUA_IMPORT(perspective);
 	LUA_IMPORT(translate);
+	LUA_IMPORT(glClearColor);
+	LUA_IMPORT(glClear);
 }
 
 
@@ -1062,7 +1075,6 @@ void setGlobals(){
 	LUA_FLOATGLOBSET(tpassed);
 }
 void draw_menu() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//TODO: invoke lua for draw menu.
@@ -1078,7 +1090,6 @@ void draw_menu() {
 }
 
 void draw_gameplay(){
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//TODO: register global variables.
 setGlobals();
 	luaL_dostring(L_STATE, "draw()");
