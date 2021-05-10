@@ -30,7 +30,6 @@ ChadEntity entities[MAX_ENTITIES];
 //camera transforms.
 mat4 camview;
 mat4 camproj;
-
 //Math registers
 mat4 mat4regs[20];
 vec3 vec3regs[20];
