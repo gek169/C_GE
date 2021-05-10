@@ -42,7 +42,7 @@ do
 		entity_setBounciness(last_ent, 0);
 		entity_setShape(last_ent,
 			1.0,y,0, 0,
-			1000,0.1,1000,0);
+			1.0,20.0/winSizeX,1000,0);
 		entity_setVelocity(last_ent,
 			0, 0, 0);
 		ld_mat4(0,
@@ -86,8 +86,8 @@ function init()
 	lMus(1, "WWGW.mp3");
 	mPlay(1, -1, 1000);
 	boing_texture = loadTexture("boing.png");
-	boing_display_list = buildSpriteDL(20, 20, boing_texture);
-	platform_display_list = buildRectangleDL(winSizeX, 20, 	0.0, 1.0, 0.0);
+	boing_display_list = buildSpriteDL(20.0/winSizeX, 20.0/winSizeY, boing_texture);
+	platform_display_list = buildRectangleDL(1.0, 20.0/winSizeX, 	0.0, 1.0, 0.0);
 	--Build some entities.
 	setGravity(0,-0.001,0);
 	setMS(200);

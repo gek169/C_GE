@@ -716,14 +716,7 @@ LUA_EXPORT(lookAt){
 }
 LUA_EXPORT(build_camview2D){
 	LUA_INTARG(1);
-	/*
-	LUA_FLOATARG(2);
-	LUA_FLOATARG(3);
-	camview = multm4((mat4){{arg2, 0,0,0,
-							0, arg3, 0,0,
-							0,0,1.0,0,
-							0,0,0,1.0}}, translate(vec3regs[arg1]));
-	*/
+	camview = translate(vec3regs[arg1]);
 	return 0;
 }
 LUA_EXPORT(get_camview){
@@ -808,8 +801,8 @@ int lua_buildSpriteDL(lua_State* L){
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, arg3);
 		glColor3f(1,1,1);
-		drawBox(-arg1/(float)winSizeX, -arg2/(float)winSizeY,
-				arg1/(float)winSizeX * 2.0, arg2/(float)winSizeY * 2.0); //centered.
+		drawBox(-arg1, -arg2,
+				arg1 * 2.0, arg2 * 2.0); //centered.
 		glDisable(GL_TEXTURE_2D);
 	glEndList();
 	lua_pushinteger(L, display_list);
@@ -829,8 +822,8 @@ int lua_buildRectangleDL(lua_State* L){
 	glNewList(display_list, GL_COMPILE);
 		glDisable(GL_TEXTURE_2D);
 		glColor3f(arg3,arg4,arg5);
-		drawBox(-arg1/(float)winSizeX, -arg2/(float)winSizeY,
-				arg1/(float)winSizeX * 2.0, arg2/(float)winSizeY * 2.0); //centered.
+		drawBox(-arg1, -arg2,
+				arg1 * 2.0, arg2 * 2.0); //centered.
 		glDisable(GL_TEXTURE_2D);
 	glEndList();
 	lua_pushinteger(L, display_list);
