@@ -29,7 +29,6 @@ do
 			0,0,1,0,
 			0,0,0,1);
 		entity_setLocalT(last_ent,0);
-
 		addEntity(last_ent);
 		last_ent = last_ent + 1;
 	end
@@ -51,7 +50,6 @@ do
 			0,0,1,0,
 			0,0,0,1);
 		entity_setLocalT(last_ent,0);
-
 		addEntity(last_ent);
 		last_ent = last_ent + 1;
 	end
