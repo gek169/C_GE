@@ -50,6 +50,13 @@ LUA_EXPORT(glRotate3f){
 				vec3regs[arg1].d[2], 0);
 	return 0;
 }
+LUA_EXPORT(glScalef){
+	LUA_INTARG(1);
+	glScalef(	vec3regs[arg1].d[0],
+				vec3regs[arg1].d[1],
+				vec3regs[arg1].d[2]);
+	return 0;
+}
 LUA_EXPORT(glPushMatrix){
 	(void)L;
 	glPushMatrix();
@@ -317,26 +324,23 @@ LUA_EXPORT(ld_mat4){
 	LUA_FLOATARG(15);
 	LUA_FLOATARG(16);
 	LUA_FLOATARG(17);
-	int i = 0;
-	mat4regs[arg1].d[i] = arg2;i++;
-	mat4regs[arg1].d[i] = arg3;i++;
-	mat4regs[arg1].d[i] = arg4;i++;
-	mat4regs[arg1].d[i] = arg5;i++;
+	mat4regs[arg1].d[0] = arg2;
+	mat4regs[arg1].d[1] = arg3;
+	mat4regs[arg1].d[2] = arg4;
+	mat4regs[arg1].d[3] = arg5;
+	mat4regs[arg1].d[4] = arg6;
+	mat4regs[arg1].d[5] = arg7;
+	mat4regs[arg1].d[6] = arg8;
+	mat4regs[arg1].d[7] = arg9;
+	mat4regs[arg1].d[8] = arg10;
+	mat4regs[arg1].d[9] = arg11;
+	mat4regs[arg1].d[10] = arg12;
+	mat4regs[arg1].d[11] = arg13;
 	
-	mat4regs[arg1].d[i] = arg6;i++;
-	mat4regs[arg1].d[i] = arg7;i++;
-	mat4regs[arg1].d[i] = arg8;i++;
-	mat4regs[arg1].d[i] = arg9;i++;
-	
-	mat4regs[arg1].d[i] = arg10;i++;
-	mat4regs[arg1].d[i] = arg11;i++;
-	mat4regs[arg1].d[i] = arg12;i++;
-	mat4regs[arg1].d[i] = arg13;i++;
-	
-	mat4regs[arg1].d[i] = arg14;i++;
-	mat4regs[arg1].d[i] = arg15;i++;
-	mat4regs[arg1].d[i] = arg16;i++;
-	mat4regs[arg1].d[i] = arg17;
+	mat4regs[arg1].d[12] = arg14;
+	mat4regs[arg1].d[13] = arg15;
+	mat4regs[arg1].d[14] = arg16;
+	mat4regs[arg1].d[15] = arg17;
 	return 0;
 }
 LUA_EXPORT(st_mat4){
@@ -370,14 +374,25 @@ LUA_EXPORT(dotv4){
 	return 1;
 }
 LUA_EXPORT(stepChadWorld){
+	LUA_INTARG(1);
+	stepChadWorld(&entity_world, arg1);
+	return 0;
+}
+LUA_EXPORT(renderChadWorld){
 	(void)L;
-	stepChadWorld(&entity_world, 1);
+	renderChadWorld(&entity_world);
 	return 0;
 }
 LUA_EXPORT(entity_setDL){
 	LUA_INTARG(1); //entity id
 	LUA_INTARG(2); //display list
 	entities[arg1].dl = arg2;
+	return 0;
+}
+LUA_EXPORT(entity_setLocalT){
+	LUA_INTARG(1); //entity id
+	LUA_INTARG(2); //mat4 register
+	entities[arg1].body.localt = mat4regs[arg2];
 	return 0;
 }
 LUA_EXPORT(entity_setMass){
@@ -544,7 +559,6 @@ LUA_EXPORT(removeEntity){
 LUA_EXPORT(addEntity){
 	LUA_INTARG(1);
 	ChadWorld_AddEntity(&entity_world, entities + arg1);
-	//LUA_INTPUSH(r);
 	return 0;
 }
 LUA_EXPORT(lMus){
@@ -702,7 +716,14 @@ LUA_EXPORT(lookAt){
 }
 LUA_EXPORT(build_camview2D){
 	LUA_INTARG(1);
-	camview = translate(vec3regs[arg1]);
+	/*
+	LUA_FLOATARG(2);
+	LUA_FLOATARG(3);
+	camview = multm4((mat4){{arg2, 0,0,0,
+							0, arg3, 0,0,
+							0,0,1.0,0,
+							0,0,0,1.0}}, translate(vec3regs[arg1]));
+	*/
 	return 0;
 }
 LUA_EXPORT(get_camview){
@@ -796,6 +817,26 @@ int lua_buildSpriteDL(lua_State* L){
 }
 
 
+int lua_buildRectangleDL(lua_State* L){
+	LUA_FLOATARG(1); //width
+	arg1/=2.0;
+	LUA_FLOATARG(2); //height
+	arg2/=2.0;
+	LUA_FLOATARG(3); //R
+	LUA_FLOATARG(4); //G
+	LUA_FLOATARG(5); //B
+	GLuint display_list = glGenLists(1);
+	glNewList(display_list, GL_COMPILE);
+		glDisable(GL_TEXTURE_2D);
+		glColor3f(arg3,arg4,arg5);
+		drawBox(-arg1/(float)winSizeX, -arg2/(float)winSizeY,
+				arg1/(float)winSizeX * 2.0, arg2/(float)winSizeY * 2.0); //centered.
+		glDisable(GL_TEXTURE_2D);
+	glEndList();
+	lua_pushinteger(L, display_list);
+	return 1;
+}
+
 
 int lua_buildModelDL(lua_State* L){
 	const char* objname = lua_tostring(L, 1);
@@ -841,6 +882,7 @@ void createLuaBindings(){
 	lua_register(L_STATE, "setPerspective", lua_setPerspective);
 	LUA_IMPORT(drawBox);
 	LUA_IMPORT(buildSpriteDL);
+	LUA_IMPORT(buildRectangleDL);
 	LUA_IMPORT(buildModelDL);
 	LUA_IMPORT(omg_box);
 	LUA_IMPORT(omg_textbox);
@@ -860,6 +902,7 @@ void createLuaBindings(){
 	LUA_IMPORT(engine_abort);
 	LUA_IMPORT(entity_setDL);
 	LUA_IMPORT(entity_getDL);
+	LUA_IMPORT(entity_setLocalT);
 	LUA_IMPORT(entity_getMass);
 	LUA_IMPORT(entity_setMass);
 	LUA_IMPORT(entity_getFriction);
@@ -917,6 +960,8 @@ void createLuaBindings(){
 	LUA_IMPORT(setLightProps);
 	LUA_IMPORT(setCullingMode);
 	LUA_IMPORT(stepChadWorld);
+	LUA_IMPORT(renderChadWorld);
+	LUA_IMPORT(glScalef);
 }
 
 
@@ -973,7 +1018,7 @@ void draw_menu() {
 	*/
 	setGlobals();
 	luaL_dostring(L_STATE, "drawMenu()");
-	drawMouse(); //TODO 
+	//drawMouse(); //TODO 
 }
 
 void draw_gameplay(){
@@ -1000,7 +1045,9 @@ void initScene() {
 		camproj = identitymat4();
 		camview = identitymat4();
 	}
-	entity_world.ents = calloc(1, MAX_ENTITIES);
+	entity_world.ents = calloc(			1, MAX_ENTITIES * sizeof(void*));
+	entity_world.world.bodies = calloc(	1, MAX_ENTITIES * sizeof(void*));
+	
 	entity_world.n_ents = 0;
 	entity_world.max_ents = MAX_ENTITIES;
 	//TODO: invoke lua for initscene.
