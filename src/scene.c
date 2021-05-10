@@ -1106,11 +1106,10 @@ void draw_menu() {
 
 void draw_gameplay(){
 	//TODO: register global variables.
-setGlobals();
+	setGlobals();
 	luaL_dostring(L_STATE, "draw()");
 }
 void draw(){
-	lua_pushinteger(L_STATE, winSizeX); lua_setglobal(L_STATE, "winSizeX");
 	if(is_in_menu) draw_menu();
 	else draw_gameplay();
 }
