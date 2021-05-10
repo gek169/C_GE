@@ -9,20 +9,26 @@ do
 --closure.
 	math.randomseed(os.time())
 	local last_ent = 0;
+	function popEnt()
+		if (last_ent < 5) then return end
+		last_ent = last_ent - 1;
+		removeEntity(last_ent);
+	end
 	function createBall()
 		entity_setDL(last_ent, boing_display_list);
-		print("Init reached here.");
 		entity_setMass(last_ent, 10.0);
 		entity_setFriction(last_ent, 0.999);
 		entity_setAirFriction(last_ent, 0.999);
-		entity_setBounciness(last_ent, 0);
+		entity_setBounciness(last_ent, 0.9);
 		entity_setShape(last_ent,
 			{math.random(-800,800)/1000.0 + 1.0,
 			math.random(-200,200)/1000.0 - 1.0, 0, 20/winSizeX,
 			0,0,0,0});
+
+		entity_setAccel(last_ent, {0,0.002,0});
 		entity_setVelocity(last_ent,
-			0, 
-			0, 0);
+			{0, 
+			0.05, 0});
 		entity_setLocalT(last_ent,
 							{1,0,0,0,
 							0,1,0,0,
@@ -34,14 +40,13 @@ do
 	end
 	function createWall(x)
 		entity_setDL(last_ent, wall_display_list);
-		print("Init reached here.");
 		entity_setMass(last_ent, 0.0);
 		entity_setFriction(last_ent, 0.999);
 		entity_setAirFriction(last_ent, 0.999);
 		entity_setBounciness(last_ent, 0);
 		entity_setShape(last_ent,
 			{x,-1.0,0, 0,
-			20.0/winSizeX, 1.0, 1000,0});
+			80.0/winSizeX, 1.0, 1000,0});
 		entity_setVelocity(last_ent,
 			0, 0, 0);
 		entity_setLocalT(last_ent,
@@ -55,14 +60,13 @@ do
 	end
 	function createPlatform(y)
 		entity_setDL(last_ent, platform_display_list);
-		print("Init reached here.");
 		entity_setMass(last_ent, 0.0);
 		entity_setFriction(last_ent, 0.999);
 		entity_setAirFriction(last_ent, 0.999);
 		entity_setBounciness(last_ent, 0);
 		entity_setShape(last_ent,
 			{1.0,y,0, 0,
-			1.0,20.0/winSizeY,1000,0});
+			1.0,30.0/winSizeY,1000,0});
 		entity_setVelocity(last_ent,
 			0, 0, 0);
 		entity_setLocalT(last_ent,
@@ -92,10 +96,10 @@ function drawMenu()
 		engine_abort();
 	end
 	if(omg_cb == 2) then
-		omg_box(mousex/winSizeX,mousey/winSizeY,   0.01,0.01,  0,0,0, 0x00ff0000);
+		omg_box(mousex/winSizeX,mousey/winSizeY,   0.03,0.03,  0,0,0, 0x00ff0000);
 		print("Click!");
 	elseif(omg_cb == 0 or omg_cb == 1) then
-		omg_box(mousex/winSizeX,mousey/winSizeY,   0.01,0.01,  0,0,0, 0x0000ff88);
+		omg_box(mousex/winSizeX,mousey/winSizeY,   0.03,0.03,  0,0,0, 0x0000ff88);
 	end
 end
 
@@ -107,19 +111,21 @@ function init()
 	mPlay(1, -1, 1000);
 	boing_texture = loadTexture("boing.png");
 	boing_display_list = buildSpriteDL(20.0/winSizeX, 20.0/winSizeY, boing_texture);
-	platform_display_list = buildRectangleDL(1.0, 10.0/winSizeY, 	0.0, 1.0, 0.0);
-	wall_display_list = buildRectangleDL(20.0/winSizeY,1.0, 	1.0, 0.0, 0.0);
+	platform_display_list = buildRectangleDL(1.0, 30.0/winSizeY, 	0.0, 1.0, 0.0);
+	wall_display_list = buildRectangleDL(40.0/winSizeY,1.0, 	1.0, 0.0, 0.0);
 	--Build some entities.
 	setGravity({0,-0.001,0});
-	print("Gravity IS::::");
+
+	
+	print("Gravity is...");
 	print(getGravity()[1]);
-	setMS(200);
-	createBall();
-	createBall();
+	setMS(0.1);
 	createPlatform(-1.2);
 	createPlatform(0);
 	createWall(2.0);
 	createWall(0.0);
+	createBall();
+	createBall();
 	print("Init finished!");
 end
 
@@ -132,6 +138,9 @@ function draw()
 		applyCamera2D();
 	if(button1 > 0) then
 		createBall();
+	end
+	if(omg_cb == 2) then
+		popEnt();
 	end
 	stepChadWorld(2);
 	renderChadWorld();
