@@ -8,6 +8,62 @@ void drawMouse() {
 }
 int haveclicked = 0; // For our toggleable movable button.
 int is_in_menu = 0;
+static inline void PushFloatArray(lua_State* L, float *array, int size){
+    lua_newtable(L);
+    for (int i = 0; i < size; i++)    {
+            lua_pushinteger(L, i);
+            lua_pushnumber(L, array[i]); // push the value at 'i'
+            // the table is now at -3 on the stack. This tells Lua
+            // to put "stack[-1]" at "stack[-2]" and pop them off,        
+            // leaving the table at the top of the stack
+           lua_settable(L, -3);    
+    }
+}
+static inline void PushLongArray(lua_State* L, long *array, int size){
+    lua_newtable(L);
+    for (int i = 0; i < size; i++)    {
+            lua_pushinteger(L, i);
+            lua_pushinteger(L, array[i]); // push the value at 'i'
+            // the table is now at -3 on the stack. This tells Lua
+            // to put "stack[-1]" at "stack[-2]" and pop them off,        
+            // leaving the table at the top of the stack
+           lua_settable(L, -3);    
+    }
+}
+static inline float popFloatFromArray(lua_State* L, int index){
+	if(lua_istable(L, -1)){
+		float result;
+		lua_pushinteger(L, index);
+		lua_gettable(L, -2);
+		result = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		return result;
+	}
+	return 0.0;
+}
+static inline void popMat4fromArray(lua_State* L,mat4* dest){
+	for(long i = 0; i < 16; i++)
+		dest->d[i] = popFloatFromArray(L, 1 + i);
+}
+static inline void popVec3fromArray(lua_State* L,vec3* dest){
+	for(long i = 0; i < 3; i++)
+		dest->d[i] = popFloatFromArray(L, 1 + i);
+}
+static inline void popVec4fromArray(lua_State* L,vec4* dest){
+	for(long i = 0; i < 4; i++)
+		dest->d[i] = popFloatFromArray(L, 1 + i);
+}
+static inline long popIntFromArray(lua_State* L, int index){
+	if(lua_istable(L, -1)){
+		long result;
+		lua_pushinteger(L, index);
+		lua_gettable(L, -2);
+		result = lua_tointeger(L, -1);
+		lua_pop(L, 1);
+		return result;
+	}
+	return 0;
+}
 #define LUA_EXPORT(fname) static int lua_##fname(lua_State* L)
 #define LUA_IMPORT(fname) lua_register(L_STATE, #fname, lua_##fname);
 #define LUA_FLOATARG(n) float arg##n = lua_tonumber(L, n);
@@ -37,24 +93,27 @@ vec4 vec4regs[20];
 
 /*LUA FUNCTIONS*/
 LUA_EXPORT(glTranslatef){
-	LUA_INTARG(1);
-	glTranslatef(	vec3regs[arg1].d[0],
-					vec3regs[arg1].d[1],
-					vec3regs[arg1].d[2]);
+	vec3 temp;
+	popVec3fromArray(L, &temp);
+	glTranslatef(	temp.d[0],
+					temp.d[1],
+					temp.d[2]);
 	return 0;
 }
 LUA_EXPORT(glRotate3f){
-	LUA_INTARG(1);
-	glRotatef(vec3regs[arg1].d[0],
-				vec3regs[arg1].d[1],
-				vec3regs[arg1].d[2], 0);
+	vec3 temp;
+	popVec3fromArray(L, &temp);
+	glRotatef(	temp.d[0],
+				temp.d[1],
+				temp.d[2], 0);
 	return 0;
 }
 LUA_EXPORT(glScalef){
-	LUA_INTARG(1);
-	glScalef(	vec3regs[arg1].d[0],
-				vec3regs[arg1].d[1],
-				vec3regs[arg1].d[2]);
+	vec3 temp;
+	popVec3fromArray(L, &temp);
+	glScalef(	temp.d[0],
+				temp.d[1],
+				temp.d[2]);
 	return 0;
 }
 LUA_EXPORT(glPushMatrix){
@@ -63,8 +122,9 @@ LUA_EXPORT(glPushMatrix){
 	return 0;
 }
 LUA_EXPORT(glMultMatrixf){
-	LUA_INTARG(1);
-	glMultMatrixf(mat4regs[arg1].d);
+	mat4 temp;
+	popMat4fromArray(L, &temp);
+	glMultMatrixf(temp.d);
 	return 0;
 }
 LUA_EXPORT(glPopMatrix){
@@ -88,10 +148,14 @@ LUA_EXPORT(mov_mat4){
 	return 0;
 }
 LUA_EXPORT(multm4){
-	LUA_INTARG(1); LUA_INTARG(2);
-	LUA_INTARG(3);
-	mat4regs[arg1] = multm4(mat4regs[arg2], mat4regs[arg3]);
-	return 0;
+	mat4 temp1;
+	mat4 temp2;
+	popMat4fromArray(L, &temp1);
+	lua_pop(L, 1);
+	popMat4fromArray(L, &temp2);
+	temp1 = multm4(temp1, temp2);
+	PushFloatArray(L, temp1.d, 16);
+	return 1;
 }
 LUA_EXPORT(setEnableDepthTest){
 	LUA_INTARG(1);
@@ -239,138 +303,125 @@ LUA_EXPORT(setColorMaterialMode){
 	return 0;
 }
 LUA_EXPORT(invmat4){
-	LUA_INTARG(1);
+	mat4 temp;
+	popMat4fromArray(L, &temp);
 	mat4 out;
-	invmat4(mat4regs[arg1], &out);
-	mat4regs[arg1] = out;
-	return 0;
+	invmat4(temp, &out);
+	PushFloatArray(L, out.d, 16);
+	return 1;
 }
 LUA_EXPORT(addv3){
-	LUA_INTARG(1); LUA_INTARG(2);
-	vec3regs[arg1] = addv3(vec3regs[arg1], vec3regs[arg2]);
-	return 0;
+	vec3 temp1;
+	vec3 temp2;
+	popVec3fromArray(L, &temp1);
+	lua_pop(L,1);
+	popVec3fromArray(L, &temp2);
+	temp1 = addv3(temp1, temp2);
+	PushFloatArray(L, temp1.d, 3);
+	return 1;
 }
 LUA_EXPORT(subv3){
-	LUA_INTARG(1); LUA_INTARG(2);
-	vec3regs[arg1] = subv3(vec3regs[arg1], vec3regs[arg2]);
-	return 0;
+	vec3 temp1;
+	vec3 temp2;
+	popVec3fromArray(L, &temp1);
+	lua_pop(L,1);
+	popVec3fromArray(L, &temp2);
+	temp1 = subv3(temp1, temp2);
+	PushFloatArray(L, temp1.d, 3);
+	return 1;
 }
 LUA_EXPORT(addv4){
-	LUA_INTARG(1); LUA_INTARG(2);
-	vec4regs[arg1] = addv4(vec4regs[arg1], vec4regs[arg2]);
-	return 0;
+	vec4 temp1;
+	vec4 temp2;
+	popVec4fromArray(L, &temp1);
+	lua_pop(L,1);
+	popVec4fromArray(L, &temp2);
+	temp1 = addv4(temp1, temp2);
+	PushFloatArray(L, temp1.d, 4);
+	return 1;
 }
 LUA_EXPORT(subv4){
-	LUA_INTARG(1); LUA_INTARG(2);
-	vec4regs[arg1] = subv4(vec4regs[arg1], vec4regs[arg2]);
-	return 0;
+	vec4 temp1;
+	vec4 temp2;
+	popVec4fromArray(L, &temp1);
+	lua_pop(L,1);
+	popVec4fromArray(L, &temp2);
+	temp1 = subv4(temp1, temp2);
+	PushFloatArray(L, temp1.d, 4);
+	return 1;
 }
 LUA_EXPORT(ld_vec3){
 	LUA_INTARG(1);
-	LUA_FLOATARG(2);
-	LUA_FLOATARG(3);
-	LUA_FLOATARG(4);
-	vec3regs[arg1].d[0] = arg2;
-	vec3regs[arg1].d[1] = arg3;
-	vec3regs[arg1].d[2] = arg4;
+	vec3 temp;
+	popVec3fromArray(L, &temp);
+	vec3regs[arg1] = temp;
 	return 0;
 }
 LUA_EXPORT(st_vec3){
 	LUA_INTARG(1);
-	LUA_FLOATPUSH(vec3regs[arg1].d[0]);
-	LUA_FLOATPUSH(vec3regs[arg1].d[1]);
-	LUA_FLOATPUSH(vec3regs[arg1].d[2]);
-	return 3;
+	PushFloatArray(L, vec3regs[arg1].d, 3);
+	return 1;
 }
 LUA_EXPORT(ld_vec4){
 	LUA_INTARG(1);
-	LUA_FLOATARG(2);
-	LUA_FLOATARG(3);
-	LUA_FLOATARG(4);
-	LUA_FLOATARG(5);
-	vec4regs[arg1].d[0] = arg2;
-	vec4regs[arg1].d[1] = arg3;
-	vec4regs[arg1].d[2] = arg4;
-	vec4regs[arg1].d[3] = arg5;
-	return 4;
+	vec4 temp;
+	popVec4fromArray(L, &temp);
+	vec4regs[arg1] = temp;
+	return 0;
 }
 LUA_EXPORT(st_vec4){
 	LUA_INTARG(1);
-	LUA_FLOATPUSH(vec4regs[arg1].d[0]);
-	LUA_FLOATPUSH(vec4regs[arg1].d[1]);
-	LUA_FLOATPUSH(vec4regs[arg1].d[2]);
-	LUA_FLOATPUSH(vec4regs[arg1].d[3]);
-	return 4;
+	PushFloatArray(L, vec4regs[arg1].d, 4);
+	return 1;
 }
 LUA_EXPORT(ld_mat4){
 	LUA_INTARG(1); //register ID;
-	
-	LUA_FLOATARG(2);
-	LUA_FLOATARG(3);
-	LUA_FLOATARG(4);
-	LUA_FLOATARG(5);
-	
-	LUA_FLOATARG(6);
-	LUA_FLOATARG(7);
-	LUA_FLOATARG(8);
-	LUA_FLOATARG(9);
-	
-	LUA_FLOATARG(10);
-	LUA_FLOATARG(11);
-	LUA_FLOATARG(12);
-	LUA_FLOATARG(13);
-	
-	LUA_FLOATARG(14);
-	LUA_FLOATARG(15);
-	LUA_FLOATARG(16);
-	LUA_FLOATARG(17);
-	mat4regs[arg1].d[0] = arg2;
-	mat4regs[arg1].d[1] = arg3;
-	mat4regs[arg1].d[2] = arg4;
-	mat4regs[arg1].d[3] = arg5;
-	mat4regs[arg1].d[4] = arg6;
-	mat4regs[arg1].d[5] = arg7;
-	mat4regs[arg1].d[6] = arg8;
-	mat4regs[arg1].d[7] = arg9;
-	mat4regs[arg1].d[8] = arg10;
-	mat4regs[arg1].d[9] = arg11;
-	mat4regs[arg1].d[10] = arg12;
-	mat4regs[arg1].d[11] = arg13;
-	
-	mat4regs[arg1].d[12] = arg14;
-	mat4regs[arg1].d[13] = arg15;
-	mat4regs[arg1].d[14] = arg16;
-	mat4regs[arg1].d[15] = arg17;
+	mat4 temp;
+	popMat4fromArray(L, &temp);
+	mat4regs[arg1] = temp;
 	return 0;
 }
 LUA_EXPORT(st_mat4){
 	LUA_INTARG(1);
-	for(int i = 0; i < 16; i++)
-		LUA_FLOATPUSH(mat4regs[arg1].d[i]);
-	return 16;
+	PushFloatArray(L, mat4regs[arg1].d, 16);
+	return 1;
 }
 LUA_EXPORT(dotv3){
-	LUA_INTARG(1);
-	LUA_INTARG(2);
-	LUA_FLOATPUSH(dotv3(vec3regs[arg1], vec3regs[arg2]));
+	vec3 temp1;
+	vec3 temp2;
+	popVec3fromArray(L, &temp1);
+	lua_pop(L,1);
+	popVec3fromArray(L, &temp2);
+	GLfloat result = dotv3(temp1, temp2);
+	LUA_FLOATPUSH(result);
 	return 1;
 }
 LUA_EXPORT(scalev3){
 	LUA_FLOATARG(1);
-	LUA_INTARG(2);
-	vec3regs[arg2] = scalev3(arg1, vec3regs[arg2]);
-	return 0;
+	vec3 temp1;
+	vec3 temp2;
+	popVec3fromArray(L, &temp1);
+	temp2 = scalev3(arg1, temp1);
+	PushFloatArray(L, temp2.d, 3);
+	return 1;
 }
 LUA_EXPORT(scalev4){
 	LUA_FLOATARG(1);
-	LUA_INTARG(2);
-	vec4regs[arg2] = scalev4(arg1, vec4regs[arg2]);
-	return 0;
+	vec4 temp1;
+	vec4 temp2;
+	popVec4fromArray(L, &temp1);
+	temp2 = scalev4(arg1, temp1);
+	PushFloatArray(L, temp2.d, 4);
+	return 1;
 }
 LUA_EXPORT(dotv4){
-	LUA_INTARG(1);
-	LUA_INTARG(2);
-	LUA_FLOATPUSH(dotv4(vec4regs[arg1], vec4regs[arg2]));
+	vec4 temp1;
+	vec4 temp2;
+	popVec4fromArray(L, &temp1);
+	lua_pop(L,1);
+	popVec4fromArray(L, &temp2);
+	GLfloat result = dotv4(temp1, temp2);
+	LUA_FLOATPUSH(result);
 	return 1;
 }
 LUA_EXPORT(stepChadWorld){
@@ -391,8 +442,9 @@ LUA_EXPORT(entity_setDL){
 }
 LUA_EXPORT(entity_setLocalT){
 	LUA_INTARG(1); //entity id
-	LUA_INTARG(2); //mat4 register
-	entities[arg1].body.localt = mat4regs[arg2];
+	mat4 temp;
+	popMat4fromArray(L, &temp);
+	entities[arg1].body.localt = temp;
 	return 0;
 }
 LUA_EXPORT(entity_setMass){

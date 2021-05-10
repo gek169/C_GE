@@ -18,17 +18,17 @@ do
 		entity_setBounciness(last_ent, 0);
 		entity_setShape(last_ent,
 			math.random(-800,800)/1000.0 + 1.0,
-			math.random(-200,200)/1000.0 - 1.0,0, 20/winSizeX,
+			math.random(-200,200)/1000.0 - 1.0, 0, 20/winSizeX,
 			0,0,0,0);
 		entity_setVelocity(last_ent,
 			0, 
 			0, 0);
-		ld_mat4(0,
-			1,0,0,0,
-			0,1,0,0,
-			0,0,1,0,
-			0,0,0,1);
-		entity_setLocalT(last_ent,0);
+		entity_setLocalT(last_ent,
+							{1,0,0,0,
+							0,1,0,0,
+							0,0,1,0,
+							0,0,0,1}
+					);
 		addEntity(last_ent);
 		last_ent = last_ent + 1;
 	end
@@ -45,11 +45,16 @@ do
 		entity_setVelocity(last_ent,
 			0, 0, 0);
 		ld_mat4(0,
-			1,0,0,0,
+			{1,0,0,0,
 			0,1,0,0,
 			0,0,1,0,
-			0,0,0,1);
-		entity_setLocalT(last_ent,0);
+			0,0,0,1});
+		entity_setLocalT(last_ent,
+							{1,0,0,0,
+							0,1,0,0,
+							0,0,1,0,
+							0,0,0,1}
+					);
 		addEntity(last_ent);
 		last_ent = last_ent + 1;
 	end
@@ -65,12 +70,12 @@ do
 			1.0,20.0/winSizeY,1000,0);
 		entity_setVelocity(last_ent,
 			0, 0, 0);
-		ld_mat4(0,
-			1,0,0,0,
-			0,1,0,0,
-			0,0,1,0,
-			0,0,0,1);
-		entity_setLocalT(last_ent,0);
+		entity_setLocalT(last_ent,
+						{	1,0,0,0,
+							0,1,0,0,
+							0,0,1,0,
+							0,0,0,1}
+					);
 		addEntity(last_ent);
 		last_ent = last_ent + 1;
 	end
@@ -80,12 +85,13 @@ function drawMenu()
 	ld_vec3(0, 0, 0, 0);
 	build_camview2D(0);
 	applyCamera2D();
-	ld_mat4(0,
-			1,0,0,0,
-			0,1,0,0,
-			0,0,1,0,
-			0,0,0,1);
-	glMultMatrixf(0);
+	glTranslatef({1.0,0,0});
+	glMultMatrixf({
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1
+	});
 	if (0 < omg_box(0.1,0.1,0.3,0.3,  0, 0,0, 0x00FFffFF) and omg_cb == 2) then
 		print("You Clicked? Aborting...");
 		engine_abort();
@@ -124,7 +130,8 @@ end
 function draw()
 	ticker = ticker + 0.016666666;
 	local sin = math.sin;
-		ld_vec3(2, sin(ticker), 0, 0);
+		ld_vec3(2, 
+					{sin(ticker), 0, 0});
 		build_camview2D(2); 
 		applyCamera2D();
 	if(button1 > 0) then
