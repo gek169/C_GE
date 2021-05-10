@@ -46,7 +46,7 @@ do
 		entity_setBounciness(last_ent, 0);
 		entity_setShape(last_ent,
 			{x,-1.0,0, 0,
-			80.0/winSizeX, 1.0, 1000,0});
+			40.0/winSizeX, 1.0, 1000,0});
 		entity_setVelocity(last_ent,
 			0, 0, 0);
 		entity_setLocalT(last_ent,
@@ -81,7 +81,9 @@ do
 end
 
 function drawMenu()
+	glTextSize(3);
 	glClear();
+	glDrawText("My awesome menu!!!", 0, 0, 0x007777dd);
 	build_camview2D({0, 0, 0, 0});
 	applyCamera2D();
 	--glTranslatef({1.0,0,0});

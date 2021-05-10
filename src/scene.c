@@ -816,6 +816,19 @@ int lua_setPerspective(lua_State* L){
 	camproj = perspective(arg1,arg2,arg3,arg4);
 	return 0;
 }
+LUA_EXPORT(glTextSize){
+	LUA_INTARG(1);
+	glTextSize(arg1);
+	return 0;
+}
+LUA_EXPORT(glDrawText){
+	LUA_STRINGARG(1);
+	LUA_INTARG(2);
+	LUA_INTARG(3);
+	LUA_INTARG(4);
+	glDrawText((const unsigned char*)arg1, arg2, arg3, arg4);
+	return 0;
+}
 LUA_EXPORT(perspective){
 	mat4 retval;
 	LUA_FLOATARG(1);
@@ -1031,6 +1044,8 @@ void createLuaBindings(){
 	LUA_IMPORT(translate);
 	LUA_IMPORT(glClearColor);
 	LUA_IMPORT(glClear);
+	LUA_IMPORT(glDrawText);
+	LUA_IMPORT(glTextSize);
 }
 
 
