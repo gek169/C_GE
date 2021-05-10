@@ -25,10 +25,10 @@ end
 
 
 function init()
-	lmus(1, "WWGW.mp3");
-	mplay(1, -1, 1000);
+	lMus(1, "WWGW.mp3");
+	mPlay(1, -1, 1000);
 	boing_texture = loadTexture("boing.png");
-	boing_display_list = buildSpriteDisplayList(20, 20, boing_texture);
+	boing_display_list = buildSpriteDL(20, 20, boing_texture);
 end
 
 
