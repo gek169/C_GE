@@ -178,7 +178,13 @@ LUA_EXPORT(setEnableDepthTest){
 	else	glDisable(GL_DEPTH_TEST);
 	return 0;
 }
+LUA_EXPORT(setLightingSmoothness){
+	LUA_INTARG(1);
+	if(arg1) glShadeModel(GL_SMOOTH); else glShadeModel(GL_FLAT);
+	return 0;
+}
 LUA_EXPORT(setEnableLighting){
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 0);
 	LUA_INTARG(1);
 	if(arg1) glEnable(GL_LIGHTING);
 	else	glDisable(GL_LIGHTING);
@@ -294,6 +300,29 @@ LUA_EXPORT(setLightProps){
 		return 0;
 	}
 
+	return 0;
+}
+LUA_EXPORT(setMaterialProps){
+	vec4 amb;
+	vec4 diff;
+	vec4 spec;
+	vec4 emiss;
+	LUA_FLOATARG(5);lua_pop(L,1); //shininess
+	popVec4fromArray(L, &emiss);lua_pop(L,1);
+	popVec4fromArray(L, &spec);lua_pop(L,1);
+	popVec4fromArray(L, &diff);lua_pop(L,1);
+	popVec4fromArray(L, &amb);lua_pop(L,1);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, amb.d);
+	glMaterialfv(GL_BACK, GL_AMBIENT, amb.d);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, diff.d);
+	glMaterialfv(GL_BACK, GL_DIFFUSE, diff.d);	
+	glMaterialfv(GL_FRONT, GL_SPECULAR, spec.d);
+	glMaterialfv(GL_BACK, GL_SPECULAR, spec.d);
+	glMaterialfv(GL_FRONT, GL_EMISSION, emiss.d);
+	glMaterialfv(GL_BACK, GL_EMISSION, emiss.d);
+	diff.d[0] = arg5;
+	glMaterialfv(GL_FRONT, GL_SHININESS, diff.d);
+	glMaterialfv(GL_BACK, GL_SHININESS, diff.d);
 	return 0;
 }
 LUA_EXPORT(setColorMaterialMode){
@@ -1051,6 +1080,8 @@ void createLuaBindings(){
 	LUA_IMPORT(glClear);
 	LUA_IMPORT(glDrawText);
 	LUA_IMPORT(glTextSize);
+	LUA_IMPORT(setMaterialProps);
+	LUA_IMPORT(setLightingSmoothness);
 }
 
 

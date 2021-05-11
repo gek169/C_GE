@@ -40,6 +40,7 @@ function init()
 	mPlay(1, -1, 1000);
 	boing_texture = loadTexture("boing.png");
 	extrude_display_list = buildModelDL("extrude.obj", boing_texture);
+	--extrude_display_list = buildModelDL("extrude.obj", 0);
 	--Build some entities.
 	setGravity({0,-0.001,0});
 
@@ -61,11 +62,19 @@ end
 
 ticker = 0;
 function draw()
+	setLightingSmoothness(1);
 	setEnableLighting(1);
+	setEnableLight(0,1);
 	setEnableColorMaterial(1);
-	setEnableLight(0);
-	setLightProps(0,3, 0,10,0,1);
-	setLightProps(0,1, 1,1,1,1);
+	setColorMaterialMode(2,0);
+	setMaterialProps(	{1,1,1,1},
+						{1,1,1,1},
+						{1,1,1,1},
+						{0,0,0,0},
+						30.0);
+	setLightProps(0,3, 0,1,-0.6,0); --position
+	setLightProps(0,1, 10,10,10,0); --diffuse
+	setLightProps(0,0, 0,0,0,0); --ambient
 	ticker = ticker + 0.01666666;
 	setCullingMode(1,1);
 	glClear();
