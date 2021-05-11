@@ -9,7 +9,8 @@ include ../config.mk
 PLAT= guess
 
 #CC= gcc -std=gnu99
-LUA_CFLAGS= -Ofast -Wall -Wextra -DLUA_5_3_COMPAT $(SYSCFLAGS) $(CFLAGS)
+#LUA_CFLAGS= -Ofast -Wall -Wextra -DLUA_5_3_COMPAT $(SYSCFLAGS) $(CFLAGS)
+LUA_CFLAGS= -Ofast -Wall -Wextra $(SYSCFLAGS) $(CFLAGS)
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
