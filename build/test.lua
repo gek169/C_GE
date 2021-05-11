@@ -137,7 +137,12 @@ function init()
 	3,3,3,3,
 	3,3,3,3,
 	3,3,3,3})[13]);
+	local i;
+	for i=0, 10,1  do
+		print("i is:", i);
+	end
 	print("Init finished!");
+
 end
 
 
