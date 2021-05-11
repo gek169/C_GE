@@ -115,12 +115,13 @@ LUA_EXPORT(glTranslatef){
 					temp.d[2]);
 	return 0;
 }
-LUA_EXPORT(glRotate3f){
+LUA_EXPORT(glRotatef){
+	LUA_FLOATARG(1);
 	vec3 temp;
 	popVec3fromArray(L, &temp);
-	glRotatef(	temp.d[0],
-				temp.d[1],
-				temp.d[2], 0);
+	glRotatef(	arg1,
+				temp.d[0],
+				temp.d[1], temp.d[2]);
 	return 0;
 }
 LUA_EXPORT(glScalef){
@@ -1070,7 +1071,7 @@ void createLuaBindings(){
 	LUA_IMPORT(get_camview);
 	LUA_IMPORT(applyCamera3D);
 	LUA_IMPORT(applyCamera2D);
-	LUA_IMPORT(glRotate3f);
+	LUA_IMPORT(glRotatef);
 	LUA_IMPORT(glTranslatef);
 	LUA_IMPORT(glPushMatrix);
 	LUA_IMPORT(glPopMatrix);
