@@ -768,6 +768,18 @@ LUA_EXPORT(omg_textbox){
 	lua_pushinteger(L, r);
 	return 1;
 }
+LUA_EXPORT(set_camview){
+	mat4 temp;
+	popMat4fromArray(L, &temp);
+	camview = temp;
+	return 0;
+}
+LUA_EXPORT(set_camproj){
+	mat4 temp;
+	popMat4fromArray(L, &temp);
+	camproj = temp;
+	return 0;
+}
 LUA_EXPORT(build_camview){
 	vec3 temp1;
 	vec3 temp2;
@@ -1082,6 +1094,8 @@ void createLuaBindings(){
 	LUA_IMPORT(glTextSize);
 	LUA_IMPORT(setMaterialProps);
 	LUA_IMPORT(setLightingSmoothness);
+	LUA_IMPORT(set_camview);
+	LUA_IMPORT(set_camproj);
 }
 
 
