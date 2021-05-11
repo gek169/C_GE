@@ -1097,6 +1097,7 @@ void createLuaBindings(){
 	LUA_IMPORT(setLightingSmoothness);
 	LUA_IMPORT(set_camview);
 	LUA_IMPORT(set_camproj);
+	LUA_IMPORT(invmat4);
 }
 
 
@@ -1154,7 +1155,6 @@ void draw_menu() {
 	luaL_dostring(L_STATE, "drawMenu()");
 	//drawMouse(); //TODO 
 }
-
 void draw_gameplay(){
 	//TODO: register global variables.
 	setGlobals();
@@ -1163,9 +1163,12 @@ void draw_gameplay(){
 void draw(){
 	if(is_in_menu) draw_menu();
 	else draw_gameplay();
+
+	
 }
 void cleanup(){
 	luaL_dostring(L_STATE, "cleanup()");
+	return;
 }
 
 void initScene() {
