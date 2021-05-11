@@ -926,9 +926,14 @@ LUA_EXPORT(buildModelDL){
 		if (!omodel.positions){ //error.
 			printf("\nERROR!!! Loading model '%s' results in ZERO POSITIONS!!!\n", objname);
 			lua_pushinteger(L, -1);
-			return 0;
+			return 1;
 		}
 		m = tobj_tomodel(&omodel);
+		if(m.npoints < 1){
+			printf("\nERROR!!! Loading model '%s' results in ZERO POSITIONS after conversion!!!\n", objname);
+			lua_pushinteger(L, -1);
+			return 1;
+		}
 		{
 			GLint list;
 			list = glGenLists(1);
