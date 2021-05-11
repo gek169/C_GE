@@ -128,6 +128,15 @@ function init()
 	createWall(0.0);
 	createBall();
 	createBall();
+	print(multm4(
+	{2,2,2,2,
+	2,2,2,2,
+	2,2,2,2,
+	2,2,2,2},
+	{3,3,3,3,
+	3,3,3,3,
+	3,3,3,3,
+	3,3,3,3})[13]);
 	print("Init finished!");
 end
 
