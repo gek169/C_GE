@@ -4,7 +4,7 @@ platform_display_list = 0;
 wall_display_list = 0;
 ticker = 0.0;
 
-
+print("COMPILING!!!!");
 do
 --closure.
 	math.randomseed(os.time())
