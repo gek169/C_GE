@@ -117,9 +117,10 @@
 @@ LUA_32BITS enables Lua with 32-bit integers and 32-bit floats.
 */
 
-//MARK: GEK MODIFIED THIS!!!!
+/*#define LUA_32BITS	0
 
-//#define LUA_32BITS	0
+MARK: GEK MODIFIED THIS!!!!
+*/
 #define LUA_32BITS	1
 
 
