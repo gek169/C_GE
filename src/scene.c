@@ -998,12 +998,12 @@ LUA_EXPORT(buildModelDL){
 }
 
 void createLuaBindings(){
-	lua_register(L_STATE, "loadTexture", lua_loadTexture);
-	lua_register(L_STATE, "bindTexture", lua_bindTexture);
-	lua_register(L_STATE, "callList", lua_callList);
-	lua_register(L_STATE, "deleteList", lua_deleteList);
-	lua_register(L_STATE, "deleteTexture", lua_deleteTexture);
-	lua_register(L_STATE, "set2D", lua_set2D);
+	LUA_IMPORT(loadTexture);
+	LUA_IMPORT(bindTexture);
+	LUA_IMPORT(set2D);
+	LUA_IMPORT(deleteList);
+	LUA_IMPORT(callList);
+	LUA_IMPORT(deleteTexture);
 	LUA_IMPORT(setPerspective);
 	LUA_IMPORT(drawBox);
 	LUA_IMPORT(buildSpriteDL);

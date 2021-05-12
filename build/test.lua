@@ -25,7 +25,7 @@ do
 			math.random(-200,200)/1000.0 - 1.0, 0, 20/winSizeX,
 			0,0,0,0});
 
-		entity_setAccel(last_ent, {0,0.002,0});
+		--entity_setAccel(last_ent, {0,0.002,0});
 		entity_setVelocity(last_ent,
 			{0, 
 			0.05, 0});
@@ -155,6 +155,10 @@ function draw()
 	if(button1 > 0) then
 		createBall();
 	end
+	if(button2 > 0) then
+		mHalt();
+		mPlay(1, -1, 1000);
+	end
 	if(omg_cb == 2) then
 		popEnt();
 	end
@@ -163,6 +167,7 @@ function draw()
 end
 
 function cleanup()
+	mHalt();
 	dMus(1);
 	deleteList(boing_display_list);
 	deleteList(wall_display_list);
