@@ -114,7 +114,7 @@ function init()
 	boing_texture = loadTexture("boing.png");
 	boing_display_list = buildSpriteDL(20.0/winSizeX, 20.0/winSizeY, boing_texture);
 	platform_display_list = buildRectangleDL(1.0, 30.0/winSizeY, 	0.0, 1.0, 0.0);
-	wall_display_list = buildRectangleDL(40.0/winSizeY,1.0, 	1.0, 0.0, 0.0);
+	wall_display_list = buildRectangleDL(40.0/winSizeX,1.0, 	1.0, 0.0, 0.0);
 	--Build some entities.
 	setGravity({0,-0.001,0});
 
@@ -164,5 +164,8 @@ end
 
 function cleanup()
 	dMus(1);
+	deleteList(boing_display_list);
+	deleteList(wall_display_list);
+	deleteList(platform_display_list);
 	print("I was asked to clean up my mess.");
 end
