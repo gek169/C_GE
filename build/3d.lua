@@ -84,6 +84,7 @@ function draw()
 	setPerspective(70, winSizeX/winSizeY, 0.1, 100);
 	applyCamera3D();
 	glTranslatef({0,math.sin(ticker),4});
+	glScalef({1,2,1});
 	callList(extrude_display_list);
 	print("This is finishing, btw");
 	--stepChadWorld(2);
