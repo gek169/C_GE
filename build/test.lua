@@ -93,7 +93,6 @@ function drawMenu()
 		0,0,1,0,
 		0,0,0,1
 	});
-	--if (0 < omg_box(0.1,0.1,0.3,0.3,  0, 0,0, 0x00FFffFF) and omg_cb == 2) then
 	if (0 < omg_textbox(0.1,0.1,"Quit", 64,  1, 1,1, 0x00FFffFF, 0) and omg_cb == 2) then
 		print("You Clicked? Aborting...");
 		engine_abort();
